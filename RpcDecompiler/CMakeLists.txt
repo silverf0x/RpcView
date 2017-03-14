@@ -19,7 +19,6 @@ add_library(RpcDecompiler SHARED
 			internalRpcDecompiler.h
 			InternalRpcDecompTypeDefs.cpp
 			internalRpcDecompTypeDefs.h
-			internalRpcDecompTypeDefs_LEGACY.h
 			internalRpcDecompTypeDefsNew.h
 			internalRpcUtils.h
 			InternalsRpcUtils.cpp
