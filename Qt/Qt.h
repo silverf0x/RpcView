@@ -1,0 +1,47 @@
+#ifndef _RPCVIEW_QT_H_
+#define _RPCVIEW_QT_H_
+
+#define QT_BUILD_CONFIGURE
+#define NOMINMAX
+#include <QtGui/QSortFilterProxyModel>
+#include <QtGui/QStandardItemModel>
+#include <QtGui/QDockWidget>
+#include <QtGui/QLabel>
+#include <QtGui/QTreeView>
+#include <QtGui/QGridLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QDockWidget>
+#include <QtGui/QTextEdit>
+#include <QtGui/QLineEdit>
+#include <QtGui/QApplication>
+#include <QtGui/QFormLayout>
+#include <QtGui/QAbstractItemView>
+#include <QtCore/QTimer>
+#include <QtGui/QMainWindow>
+#include <QtGui/QStatusBar>
+#include <QtGui/QAction>
+#include <QtGui/QActionGroup>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
+#include <QtGui/QPixmap>
+#include <QtGui/QTreeWidgetItem>
+#include <QtGui/QTreeWidget>
+#include <QtGui/QMessageBox>
+#include <QtCore/QFile>
+#include <QtCore/QProcess>
+#include <QtGui/QSplashScreen>
+#include <QtGui/QHeaderView>
+#include <QtGui/QSyntaxHighlighter>
+#include <QtCore/QSettings>
+#include <QtCore/QThread>
+#include <QtGui/QColorDialog>
+#include <QtGui/QInputDialog>
+#include <QtGui/QCheckBox>
+#include <QtGui/QPushButton>
+#include <QtGui/QStackedWidget>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QToolButton>
+#include <QtGui/QDialogButtonBox>
+#include <QtCore/QSignalMapper>
+
+#endif
