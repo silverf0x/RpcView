@@ -1,8 +1,8 @@
-﻿# RpcView #
+﻿# RpcView
 
 RpcView is a free tool to explore and decompile all RPC functionalities present on a Microsoft system.
 
-## Compilation ##
+## Compilation
 
 Required elements to compiled the project:
 
@@ -15,7 +15,7 @@ Before running CMake you have to set the CMAKE_PREFIX_PATH environment variable 
 set CMAKE_PREFIX_PATH=C:\Qt\4.8.6
 ```
 Then you can run CMake to produce the project solution.
-Here is an example to generate the x64 solution with Visual Studio 2053 from the ```RpcView/Build/x64``` directory:
+Here is an example to generate the x64 solution with Visual Studio 2015 from the ```RpcView/Build/x64``` directory:
 
 ```cmake
 cmake -G"Visual Studio 14 2015 Win64" ../../
@@ -92,13 +92,13 @@ cmake -G"Visual Studio 14 2015" ../../
 ```
 Now you can compile the solution with Visual Studio or CMAKE:
 
-```
+```cmake
 cmake --build . --config Release
 ```
 
 RpcView32 binaries are produced in the ```RpcView/Build/bin/x86``` directory and RpcView64 ones in the ```RpcView/Build/bin/x64```
 
-## Acknowledgements ##
+## Acknowledgements
 * Jeremy
 * Julien
 * Yoanne
