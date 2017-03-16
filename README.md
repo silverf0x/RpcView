@@ -1,8 +1,25 @@
-﻿# RpcView
+﻿RpcView
+=======
 
 RpcView is a free tool to explore and decompile all RPC functionalities present on a Microsoft system.
 
-## Compilation
+How to add a new RPC runtime
+----------------------------------
+
+Basically you have two possibilities to support a new RPC runtime (rpcrt4.dll) version:
+
+- The easy way: just edit the RpcInternals.h file in the corresponding RpcCore directories (32 and 64-bit versions) to add your runtime version in the RPC_CORE_RUNTIME_VERSION table.
+- The best way: reverse the rpcrt4.dll to define the required structures used by RpcView, e.g. RPC_SERVER, RPC_INTERFACE and RPC_ADDRESS.
+
+Currently, the supported versions are organized as follows:
+
+- RpcCore1 for Windows XP
+- RpcCore2 for Windows 7
+- RpcCore3 for Windows 8
+- RpcCore4 for Windows 8.1 and 10
+
+Compilation
+--------------
 
 Required elements to compiled the project:
 
@@ -98,7 +115,8 @@ cmake --build . --config Release
 
 RpcView32 binaries are produced in the ```RpcView/Build/bin/x86``` directory and RpcView64 ones in the ```RpcView/Build/bin/x64```
 
-## Acknowledgements
+Acknowledgements
+----------------------
 * Jeremy
 * Julien
 * Yoanne
