@@ -30,7 +30,7 @@ IdlInterface*	IdlFunction::getpIdlInterface()		const
 
 size_t			IdlFunction::getNbArguments() const
 {
-	return (size_t)m_ProcHeader.oifheader.bNumber_of_params;
+	return (size_t)m_ProcHeader.oifheader.number_of_param;
 }
 
 bool			IdlFunction::hasRangeOnConformance() const
@@ -259,6 +259,7 @@ DECOMP_STATUS IdlFunction::decodeProcHeader(void* pCtx)
 					sizeof(this->m_ProcHeader.oifheader));
 
 	if (bResult == FALSE){ 
+		RPC_ERROR_FN("can not read oif header\n");
 		return DS_ERR_UNABLE_TO_READ_MEMORY; ; 
 	}
 
@@ -267,42 +268,45 @@ DECOMP_STATUS IdlFunction::decodeProcHeader(void* pCtx)
 	//========================================================
 	// Read Win32Ext header part of header
 	//========================================================
-
-	// TODO : check under which condition win32Kext header is present
-	bResult = RPC_GET_PROCESS_DATA2(
-					(pRpcDecompilerCtxt->pRpcDecompilerInfo->pProcFormatString + uOffsetInProcFmtString),
-					&(this->m_ProcHeader.win2KextHeader.extension_version),
-					sizeof(this->m_ProcHeader.win2KextHeader.extension_version));
-	
-	if (bResult == FALSE){ 
-		return DS_ERR_UNABLE_TO_READ_MEMORY; ; 
-	}
-
-
-	switch (this->m_ProcHeader.win2KextHeader.extension_version)
+	if (this->m_ProcHeader.oifheader.interpreter_opt_flag.HasExtensions)
 	{
-	case WIN2K_EXT_HEADER_32B_SIZE:
 		bResult = RPC_GET_PROCESS_DATA2(
 			(pRpcDecompilerCtxt->pRpcDecompilerInfo->pProcFormatString + uOffsetInProcFmtString),
 			&(this->m_ProcHeader.win2KextHeader.extension_version),
-			WIN2K_EXT_HEADER_32B_SIZE
-			);
+			sizeof(this->m_ProcHeader.win2KextHeader.extension_version));
 
-		uOffsetInProcFmtString += WIN2K_EXT_HEADER_32B_SIZE;
+		if (bResult == FALSE){
+			RPC_ERROR_FN("can not read win32ext header\n");
+			return DS_ERR_UNABLE_TO_READ_MEMORY;
+		}
 
-		break;
-	case WIN2K_EXT_HEADER_64B_SIZE:
-		bResult = RPC_GET_PROCESS_DATA2(
-			(pRpcDecompilerCtxt->pRpcDecompilerInfo->pProcFormatString + uOffsetInProcFmtString),
-			&(this->m_ProcHeader.win2KextHeader.extension_version),
-			WIN2K_EXT_HEADER_64B_SIZE
-			);
 
-		uOffsetInProcFmtString += WIN2K_EXT_HEADER_64B_SIZE;
-		break;
+		switch (this->m_ProcHeader.win2KextHeader.extension_version)
+		{
+		case WIN2K_EXT_HEADER_32B_SIZE:
+			bResult = RPC_GET_PROCESS_DATA2(
+				(pRpcDecompilerCtxt->pRpcDecompilerInfo->pProcFormatString + uOffsetInProcFmtString),
+				&(this->m_ProcHeader.win2KextHeader.extension_version),
+				WIN2K_EXT_HEADER_32B_SIZE
+				);
 
-	default:
-		return DS_ERR_INVALID_DATA;
+			uOffsetInProcFmtString += WIN2K_EXT_HEADER_32B_SIZE;
+
+			break;
+		case WIN2K_EXT_HEADER_64B_SIZE:
+			bResult = RPC_GET_PROCESS_DATA2(
+				(pRpcDecompilerCtxt->pRpcDecompilerInfo->pProcFormatString + uOffsetInProcFmtString),
+				&(this->m_ProcHeader.win2KextHeader.extension_version),
+				WIN2K_EXT_HEADER_64B_SIZE
+				);
+
+			uOffsetInProcFmtString += WIN2K_EXT_HEADER_64B_SIZE;
+			break;
+
+		default:
+			RPC_ERROR_FN("invalid win32k header len");
+			return DS_ERR_INVALID_DATA;
+		}
 	}
 
 	m_uOffsetFirstArg =   uOffsetInProcFmtString;

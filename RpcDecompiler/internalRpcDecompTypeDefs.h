@@ -242,7 +242,7 @@ typedef struct Oif_Header_t
 														as the SERVER_MUST_SIZE flag triggers the sizing. */
 	INTERPRETER_OPT_FLAGS	interpreter_opt_flag;		// Voir interpreter_opt_flag values
 	unsigned char			number_of_param;			// Nombre de paramètres décrits de la procédure, return compris
-}Oif_Header_t;
+}Oif_Header_t, OIF_HEADER_T;
 
 //------------------------------------------------------------------------------
 // _MIDL_PROC_FORMAT_STRING types :
@@ -323,15 +323,6 @@ typedef struct _OI_HEADER_T
 	DWORD					dwRpc_flags;
 	OI_HEADER_END_T			end;
 }OI_HEADER_T;
-
-// Oif fields
-typedef struct _OIF_HEADER_T
-{
-	WORD		wConstant_client_buffer_size;
-	WORD		wConstant_server_buffer_size;
-	BYTE		bINTERPRETER_OPT_FLAGS;
-	BYTE		bNumber_of_params;
-}OIF_HEADER_T;
 
 //
 // Procedure header
