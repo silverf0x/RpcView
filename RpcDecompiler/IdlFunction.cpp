@@ -235,6 +235,7 @@ DECOMP_STATUS IdlFunction::decodeProcHeader(void* pCtx)
 
 			if(bResult == FALSE)
 			{
+				RPC_ERROR_FN("can not read explicit bind handle");
 				return DS_ERR_UNABLE_TO_READ_MEMORY;
 			}
 
@@ -244,7 +245,6 @@ DECOMP_STATUS IdlFunction::decodeProcHeader(void* pCtx)
 		default:
 			RPC_ERROR_FN("invalid explicit handle type\n");
 			return DS_ERR_INVALID_DATA;
-			break;
 		}
 	}
 
