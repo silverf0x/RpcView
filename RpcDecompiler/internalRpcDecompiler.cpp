@@ -248,7 +248,7 @@ BOOL	__fastcall RpcDecompilerDecodeAndPrintPrototypeReturnType(
 			);	
 
 		currentOffset += sizeof(Oi_Header_RpcFlags_t);
-		RPC_DEBUG_FN((UCHAR*)"\noiHeaderRpcFlagsToDecode->rpc_flags = 0x%x", oiHeaderRpcFlagsToDecode->rpc_flags);
+		//RPC_DEBUG_FN((UCHAR*)"\noiHeaderRpcFlagsToDecode->rpc_flags = 0x%x", oiHeaderRpcFlagsToDecode->rpc_flags);
 	}
 
 
