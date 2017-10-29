@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "Pdb.h"
 #include <conio.h>
 #include <Strsafe.h>
@@ -80,8 +81,9 @@ End:
 BOOL WINAPI GetPdbFilePath(HANDLE hProcess, VOID* pModuleBase, UCHAR* pPdbPath, UINT PdbPathSize)
 {
 	CV_INFO_PDB70	Pdb70Info;
-	CHAR			SymbolPath[MAX_PATH];
-	BOOL			bResult					= FALSE;
+	CHAR			SymbolPath[MAX_PATH] = { 0 };
+	CHAR			NtSymbolPath[MAX_PATH] = { 0 };
+	BOOL			bResult = FALSE;
 
 	if (!GetModulePdbInfo(hProcess, pModuleBase, &Pdb70Info)) goto End;
 	/*
@@ -97,7 +99,18 @@ BOOL WINAPI GetPdbFilePath(HANDLE hProcess, VOID* pModuleBase, UCHAR* pPdbPath, 
     }
     else
     {
-        if (GetEnvironmentVariableA("RpcViewSymbolPath", SymbolPath, sizeof(SymbolPath)) == 0) goto End;
+		int		iResult;
+		char*	pStar = NULL;
+
+		if (GetEnvironmentVariableA("RpcViewSymbolPath", NtSymbolPath, sizeof(NtSymbolPath)) == 0)
+		{
+			if (GetEnvironmentVariableA("_NT_SYMBOL_PATH", NtSymbolPath, sizeof(NtSymbolPath)) == 0) goto End;
+		}
+		iResult = sscanf(NtSymbolPath, "srv*%259s", SymbolPath);
+		if (iResult == 0) goto End;
+		pStar = strchr(SymbolPath+4, '*');
+		if (pStar != NULL) *pStar = 0;
+
         StringCbPrintfA((STRSAFE_LPSTR)pPdbPath, PdbPathSize, "%s\\%s\\%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X%X\\%s",
             SymbolPath,
             Pdb70Info.PdbFileName,
@@ -116,7 +129,6 @@ BOOL WINAPI GetPdbFilePath(HANDLE hProcess, VOID* pModuleBase, UCHAR* pPdbPath, 
             Pdb70Info.PdbFileName
             );
     }
-	//printf("pdb path: %s\n",pPdbPath);
 	bResult = TRUE;
 End:
 	return (bResult);
