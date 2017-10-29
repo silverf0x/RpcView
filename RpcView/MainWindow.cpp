@@ -444,7 +444,7 @@ void MainWindow_C::ConfigureSymbols()
 							CurrentSymbolsPath,
 							&bOk
 							);
-	 if ( bOk && !NewSymbolsPath.isEmpty() )
+	 if ( bOk )
 	 {
 		 pSettings->setValue("SymbolsPath",NewSymbolsPath);
 		 SetEnvironmentVariableA("RpcViewSymbolPath",NewSymbolsPath.toAscii());
