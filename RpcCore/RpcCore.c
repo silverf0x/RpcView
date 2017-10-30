@@ -19,7 +19,7 @@
 #pragma comment(lib,"Version.lib")
 #pragma comment(lib,"Userenv.lib")
 
-#define MAX_SIMPLE_DICT_ENTRIES			0x400
+#define MAX_SIMPLE_DICT_ENTRIES			0x200
 #define RPC_MAX_ENDPOINT_PROTOCOL_SIZE	0x100
 #define RPC_MAX_ENDPOINT_NAME_SIZE		0x100
 #define RPC_MAX_DLL_NAME_SIZE			0x100
@@ -191,7 +191,7 @@ BOOL WINAPI GetRpcServerAddressCallback(HANDLE hProcess, UINT Index, VOID PTR_T 
     UNREFERENCED_PARAMETER(Index);
 
 	if (!ReadProcessMemory(hProcess,pSimpleDictEntry,&RpcInterface,sizeof(RpcInterface),NULL)) goto End;
-
+	
 	if ( (RpcInterface.RpcServerInterface.Length==sizeof(RPC_SERVER_INTERFACE_T)) &&
 		(!memcmp(&RpcInterface.RpcServerInterface.TransferSyntax, &DceRpcSyntaxUuid, sizeof(DceRpcSyntaxUuid))))
 	{
