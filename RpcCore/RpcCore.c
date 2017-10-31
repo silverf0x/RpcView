@@ -19,7 +19,7 @@
 #pragma comment(lib,"Version.lib")
 #pragma comment(lib,"Userenv.lib")
 
-#define MAX_SIMPLE_DICT_ENTRIES			0x200
+#define MAX_SIMPLE_DICT_ENTRIES			0x20
 #define RPC_MAX_ENDPOINT_PROTOCOL_SIZE	0x100
 #define RPC_MAX_ENDPOINT_NAME_SIZE		0x100
 #define RPC_MAX_DLL_NAME_SIZE			0x100
