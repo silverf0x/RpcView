@@ -109,17 +109,14 @@ VOID* __fastcall RpcCoreInit()
     }
     pRpcCoreManager->pNativeCoreCtxt = pRpcCoreManager->pNativeCore->RpcCoreInitFn();
 #ifdef _WIN64
-    if (!LoadCoreEngine(&pRpcCoreManager->pWow64Core, &pRpcCoreManager->pWow64CoreCtxt, TRUE)) goto Cleanup;
+    if (!LoadCoreEngine(&pRpcCoreManager->pWow64Core, &pRpcCoreManager->pWow64CoreCtxt, TRUE))
+    {
+        OS_FREE(pRpcCoreManager);
+        return NULL;
+    }
     pRpcCoreManager->pWow64CoreCtxt = pRpcCoreManager->pWow64Core->RpcCoreInitFn();
 #endif
-End:
     return (pRpcCoreManager);
-#ifdef _WIN64
-Cleanup:
-#endif
-    OS_FREE(pRpcCoreManager);
-    pRpcCoreManager = NULL;
-    goto End;
 }
 
 //-----------------------------------------------------------------------------
