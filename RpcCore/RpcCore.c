@@ -19,7 +19,7 @@
 #pragma comment(lib,"Version.lib")
 #pragma comment(lib,"Userenv.lib")
 
-#define MAX_SIMPLE_DICT_ENTRIES			0x20
+#define MAX_SIMPLE_DICT_ENTRIES			0x200
 #define RPC_MAX_ENDPOINT_PROTOCOL_SIZE	0x100
 #define RPC_MAX_ENDPOINT_NAME_SIZE		0x100
 #define RPC_MAX_DLL_NAME_SIZE			0x100
@@ -170,7 +170,8 @@ End:
 
 
 typedef struct{
-	BOOL bFound;
+	BOOL            bFound;
+    PRPC_SERVER_T   pRpcServer;
 }GetRpcServerAddressCallbackCtxt_T;
 
 
@@ -193,7 +194,8 @@ BOOL WINAPI GetRpcServerAddressCallback(HANDLE hProcess, UINT Index, VOID PTR_T 
 	if (!ReadProcessMemory(hProcess,pSimpleDictEntry,&RpcInterface,sizeof(RpcInterface),NULL)) goto End;
 	
 	if ( (RpcInterface.RpcServerInterface.Length==sizeof(RPC_SERVER_INTERFACE_T)) &&
-		(!memcmp(&RpcInterface.RpcServerInterface.TransferSyntax, &DceRpcSyntaxUuid, sizeof(DceRpcSyntaxUuid))))
+		(!memcmp(&RpcInterface.RpcServerInterface.TransferSyntax, &DceRpcSyntaxUuid, sizeof(DceRpcSyntaxUuid))) &&
+        RpcInterface.pRpcServer == pGetRpcServerAddressCallbackCtxt->pRpcServer)
 	{
 		pGetRpcServerAddressCallbackCtxt->bFound = TRUE;
 		*pbContinue=FALSE;
@@ -242,6 +244,7 @@ BOOL WINAPI GetRpcServerAddressInProcess(DWORD Pid,RpcCoreInternalCtxt_T* pRpcCo
 		{
 			if (!ReadProcessMemory(hProcess,pCandidate,&pRpcServer,sizeof(VOID PTR_T),NULL))	goto NextCandidate;
 			if (!ReadProcessMemory(hProcess,pRpcServer,&RpcServer,sizeof(RpcServer),NULL))		goto NextCandidate;
+            GetRpcServerAddressCallbackCtxt.pRpcServer = pRpcServer;
 			if (!EnumSimpleDict(hProcess,&RpcServer.InterfaceDict,&GetRpcServerAddressCallback,&GetRpcServerAddressCallbackCtxt)) goto End;
 			if (GetRpcServerAddressCallbackCtxt.bFound==TRUE)
 			{
