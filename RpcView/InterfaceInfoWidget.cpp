@@ -158,15 +158,15 @@ End:
 }
 
 //------------------------------------------------------------------------------
-void InterfaceInfoWidget_C::SetAddressRepresentation(AddressRepresentation_T AddressRepresentation)
+void InterfaceInfoWidget_C::SetAddressRepresentation(AddressRepresentation_T AddrRepresentation)
 {
-	this->AddressRepresentation	= AddressRepresentation;
+	this->AddressRepresentation	= AddrRepresentation;
 	
 	pCallbackAddress->setText("");
 	pTypeFormatString->setText("");
 	pProcFormatString->setText("");
 	pExpressionEvaluation->setText("");
-	switch (AddressRepresentation)
+	switch (AddrRepresentation)
 	{
 		case AddressRepresentation_RVA:
 			if ((IfCallback != 0) && (IfCallback!=INVALID_IF_CALLBACK_ADDRESS)) pCallbackAddress->setText(QString("+0x%1").arg(IfCallback - Base, 8, 16, QLatin1Char('0')));
@@ -198,6 +198,8 @@ void InterfaceInfoWidget_C::AcceptVisitor(ViewVisitor_C* pVisitor)
 //------------------------------------------------------------------------------
 InterfaceInfoWidget_C::InterfaceInfoWidget_C(QWidget* pParent):QDockWidget(WidgetName)
 {
+    UNREFERENCED_PARAMETER(pParent);
+
 	this->Pid = 0;
 	
 	setObjectName(WidgetName);

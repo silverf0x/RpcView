@@ -132,7 +132,7 @@ bool MainWindow_C::eventFilter(QObject* pObject, QEvent* pEvent)
 {
 	if (pEvent->type() == QEvent::ContextMenu)
 	{
-		QPoint& position = QCursor::pos();
+		QPoint position = QCursor::pos();
 		//
 		// Show the context menu associatd to columns
 		//
@@ -207,8 +207,9 @@ VOID __cdecl RpcPrint(void* pContext, const char* pTxt)
 VOID __cdecl RpcDebug(const char* pFunction, ULONG Line, const char* pFormatString, ...)
 {
 	va_list	Arg;
-	va_start(Arg, pFormatString);
-
+    UNREFERENCED_PARAMETER(pFunction);
+    UNREFERENCED_PARAMETER(Line);
+    va_start(Arg, pFormatString);
 	_vcprintf(pFormatString, Arg);
 }
 
@@ -384,7 +385,8 @@ void MainWindow_C::SendVisitor(ViewVisitor_C& Visitor)
 //------------------------------------------------------------------------------
  void MainWindow_C::closeEvent(QCloseEvent *event)
  {
-	Exit();
+    UNREFERENCED_PARAMETER(event);
+    Exit();
  }
 
 
@@ -554,15 +556,15 @@ void MainWindow_C::SetupMenu()
 	//
 	QMenu*		pMenuFile					=	pMenuBar->addMenu("&File");
 	QAction*	pActionAllProcessesDetails	=	pMenuFile->addAction("Show &Details for All Processes",this,SLOT(ViewDetailsForAllProcesses()));
-	QAction*	pActionFileExit				=	pMenuFile->addAction("E&xit",this,SLOT(Exit()));
+	pMenuFile->addAction("E&xit",this,SLOT(Exit()));
 	//
 	// Option
 	//
 	QMenu*		pMenuOptions				=	pMenuBar->addMenu("&Options");
-	QAction*	pActionConfigureSymbols		=	pMenuOptions->addAction("Configure Sym&bols",this,SLOT(ConfigureSymbols()));
+	pMenuOptions->addAction("Configure Sym&bols",this,SLOT(ConfigureSymbols()));
 	QMenu*		pSubMenupdateSpeed			=	pMenuOptions->addMenu("&Refresh Speed");
 	QAction*	pActionRefresh				=	pMenuOptions->addAction("Refresh &Now", this, SLOT(RefreshViews()));
-	QAction*	pActionViewSelectColumns	=	pMenuOptions->addAction("Select Col&umns", this, SLOT(ShowColumnsDialog()));
+	pMenuOptions->addAction("Select Col&umns", this, SLOT(ShowColumnsDialog()));
 	QMenu*		pSubMenuAddress				=	pMenuOptions->addMenu("&Address");
 	pActionRefresh->setShortcut(Qt::Key_F5);
 
@@ -616,9 +618,9 @@ void MainWindow_C::SetupMenu()
 	// Filter
 	//
 	QMenu*		pMenuFilter = pMenuBar->addMenu("Fil&ter");
-	QAction*	pActionFilterProcesses	= pMenuFilter->addAction("&Process", this, SLOT(FilterProcesses()));
-	QAction*	pActionFilterEndpoints	= pMenuFilter->addAction("&Endpoints", this, SLOT(FilterEndpoints()));
-	QAction*	pActionFilterInterfaces = pMenuFilter->addAction("&Interfaces", this, SLOT(FilterInterfaces()));
+	pMenuFilter->addAction("&Process", this, SLOT(FilterProcesses()));
+	pMenuFilter->addAction("&Endpoints", this, SLOT(FilterEndpoints()));
+	pMenuFilter->addAction("&Interfaces", this, SLOT(FilterInterfaces()));
 	//
 	// Help
 	//
@@ -628,8 +630,8 @@ void MainWindow_C::SetupMenu()
 	//--
 	pMenuHelp->addSeparator();
 	//--
-	QAction*	pActionAbout	= pMenuHelp->addAction("&About", this, SLOT(About()));
-				pActionAboutQt	= pMenuHelp->addAction("About &Qt", qApp, SLOT(aboutQt()));
+	pMenuHelp->addAction("&About", this, SLOT(About()));
+	pMenuHelp->addAction("About &Qt", qApp, SLOT(aboutQt()));
 
 	if (IsUserAnAdmin()) pActionAllProcessesDetails->setEnabled(false);
 
@@ -729,12 +731,11 @@ MainWindow_C::MainWindow_C(RpcCore_T* pRpcCore)
 
 	setStatusBar(&StatusBar);
 
-	HANDLE hIcon = LoadImageA(GetModuleHandle(NULL), MAKEINTRESOURCE(ID_MAIN_ICON), IMAGE_ICON, 0, 0, 0);
-
-	QFont font("Helvetica", 20, QFont::Bold);
 #ifndef _DEBUG
+    HANDLE hIcon = LoadImageA(GetModuleHandle(NULL), MAKEINTRESOURCE(ID_MAIN_ICON), IMAGE_ICON, 0, 0, 0);
 	QSplashScreen SplashScreen(QtWin::fromHICON((HICON)hIcon),Qt::WindowStaysOnTopHint);
 	SplashScreen.showMessage(QString("RpcView"), Qt::AlignCenter, QColor(Qt::lightGray));
+    QFont font("Helvetica", 20, QFont::Bold);
 	SplashScreen.setFont(font);
 	SplashScreen.show();
 #endif
@@ -780,12 +781,12 @@ MainWindow_C::MainWindow_C(RpcCore_T* pRpcCore)
 
 	restoreGeometry( pSettings->value("MainWindow/geometry").toByteArray() );
 	restoreState( pSettings->value("MainWindow/windowState").toByteArray() );
-	ConfigurationVisitor_C	ConfigurationVisitor(ConfigurationVisitor_C::Load,pSettings);
-	SendVisitor(ConfigurationVisitor);
+	ConfigurationVisitor_C	ConfigurationVisitorLoad(ConfigurationVisitor_C::Load,pSettings);
+	SendVisitor(ConfigurationVisitorLoad);
 	if (AddressRepresentation == AddressRepresentation_RVA)
 	{ 
-		ConfigurationVisitor_C	ConfigurationVisitor(ConfigurationVisitor_C::AddressRVA, pSettings);
-		SendVisitor(ConfigurationVisitor);
+		ConfigurationVisitor_C	ConfigurationVisitorAddr(ConfigurationVisitor_C::AddressRVA, pSettings);
+		SendVisitor(ConfigurationVisitorAddr);
 	}
 	
 	SetEnvironmentVariableA( "RpcViewSymbolPath",pSettings->value("SymbolsPath").toByteArray() );

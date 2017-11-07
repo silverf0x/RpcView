@@ -81,7 +81,6 @@ private:
 	QAction*				pActionViewProcedures;
 	QAction*				pActionViewInterfaceInfo;
 	QAction*				pActionViewProcessInfo;
-	QAction*				pActionAboutQt;
 	QAction*				pActionSpeedFast;		
 	QAction*				pActionSpeedNormal;		
 	QAction*				pActionSpeedBelowNormal;	

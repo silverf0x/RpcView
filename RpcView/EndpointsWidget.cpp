@@ -85,6 +85,8 @@ bool EndpointsWidget_C::IsEndpointsPresent(quint32 Pid, WCHAR* pName,WCHAR* pPro
 	QList<QStandardItem*>	ItemList;
 	bool					bResult = false;
 
+    UNREFERENCED_PARAMETER(Pid);
+
 	ItemList = pModel->findItems(QString::fromUtf16((const ushort*)pName), Qt::MatchFixedString, Column_Name);
 	if (ItemList.isEmpty()) goto End;
 	

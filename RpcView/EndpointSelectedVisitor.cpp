@@ -26,6 +26,7 @@ EndpointSelectedVisitor_C::EndpointSelectedVisitor_C(quint32 Pid,RpcCore_T* pRpc
 void EndpointSelectedVisitor_C::Visit(EndpointsWidget_C* pEndpointsWidget)
 {
 	//nothing to do here
+    UNREFERENCED_PARAMETER(pEndpointsWidget);
 }
 
 

@@ -89,6 +89,7 @@ void ConfigurationVisitor_C::Visit(InterfaceInfoWidget_C* pInterfaceInfoWidget)
 void ConfigurationVisitor_C::Visit(ProcessInfoWidget_C* pProcessInfoWidget)
 {
 	//nothing to do here
+    UNREFERENCED_PARAMETER(pProcessInfoWidget);
 }
 
 //------------------------------------------------------------------------------

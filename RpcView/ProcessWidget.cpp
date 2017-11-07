@@ -146,6 +146,8 @@ void ProcessWidget_C::ProcessSelected(QTreeWidgetItem* pItem, int Column)
 {
 	quint32	Pid;
 
+    UNREFERENCED_PARAMETER(Column);
+
 	Pid = pItem->data(Column_Pid,0).toInt();
 	emit ProcessSelected(Pid);
 }
@@ -346,6 +348,8 @@ void ProcessWidget_C::LoadConfiguration(QSettings* pSettings)
 //------------------------------------------------------------------------------
 void ProcessWidget_C::InitProcessTreeWidget(QWidget* pParent)
 {
+    UNREFERENCED_PARAMETER(pParent);
+
 	pProcessTree = new QTreeWidget(this); 
 
 	QTreeWidgetItem* pHeaderItem = pProcessTree->headerItem();
@@ -374,6 +378,7 @@ void ProcessWidget_C::InitProcessTreeWidget(QWidget* pParent)
 //------------------------------------------------------------------------------
 void ProcessWidget_C::InitProcessTreeView(QWidget* pParent)
 {
+    UNREFERENCED_PARAMETER(pParent);
 	pProxyModel = new QSortFilterProxyModel(this);
 	pProxyModel->setDynamicSortFilter(true);
 	pProxyModel->setFilterKeyColumn(Column_Pid);
@@ -493,6 +498,8 @@ void ProcessWidget_C::UpdateColumnsVisibility()
 // Switch to the view header
 void ProcessWidget_C::TreeHeaderClicked(int logicalIndex)
 {
+    UNREFERENCED_PARAMETER(logicalIndex);
+
 	if (pStackedWidget->currentWidget()!=pProcessView)
 	{
 		pStackedWidget->setCurrentWidget(pProcessView);
@@ -527,8 +534,6 @@ void ProcessWidget_C::ViewHeaderClicked(int logicalIndex)
 //------------------------------------------------------------------------------
 ProcessWidget_C::ProcessWidget_C(QWidget* pParent):QGroupBox(WidgetName)
 {
-	QGridLayout*	pGridLayout;
-
 	setObjectName(WidgetName);
 
 	pStackedWidget = new QStackedWidget(this);

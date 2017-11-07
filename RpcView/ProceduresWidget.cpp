@@ -20,9 +20,9 @@ QString GetProceduresWidgetColumName(ProceduresWigetColumn_T ProceduresWigetColu
 
 
 //------------------------------------------------------------------------------
-void ProceduresWidget_C::reset(ULONG Pid)
+void ProceduresWidget_C::reset(ULONG pid)
 {
-	this->Pid = Pid;
+	this->Pid = pid;
 	pProcedures->clear();
 }
 
@@ -82,14 +82,14 @@ bool ProceduresWidget_C::AddProcedure(quint32 ProcIdx, WCHAR* pSymbolName, VOID*
 
 
 //------------------------------------------------------------------------------
-void ProceduresWidget_C::SetAddressRepresentation(AddressRepresentation_T AddressRepresentation)
+void ProceduresWidget_C::SetAddressRepresentation(AddressRepresentation_T AddrRepresentation)
 {
 	QTreeWidgetItem*	pProcedure;
 	quintptr			AbsoluteAddr;
 
-	this->AddressRepresentation = AddressRepresentation;
+	this->AddressRepresentation = AddrRepresentation;
 
-	switch (AddressRepresentation)
+	switch (AddrRepresentation)
 	{
 		case AddressRepresentation_RVA:
 			for (int i = 0; i < pProcedures->topLevelItemCount(); i++)

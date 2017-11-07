@@ -178,6 +178,9 @@ void ProcessInfoWidget_C::AcceptVisitor(ViewVisitor_C* pVisitor)
 //------------------------------------------------------------------------------
 ProcessInfoWidget_C::ProcessInfoWidget_C(QWidget* pParent):QDockWidget(WidgetName)
 {
+
+    UNREFERENCED_PARAMETER(pParent);
+
 	setObjectName(WidgetName);
 
 	pTabWidget	= new QTabWidget(this);

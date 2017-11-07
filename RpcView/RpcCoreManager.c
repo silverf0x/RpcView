@@ -57,7 +57,7 @@ BOOL NTAPI LoadCoreEngine(RpcCore_T** ppRpcCoreHelper, void** ppRpcCoreCtxt, BOO
         hLib = LoadLibraryA(Win32FindData.cFileName);
         if (hLib != NULL)
         {
-            pRpcCoreHelper = (RpcCore_T*)GetProcAddress(hLib, RPC_CORE_EXPORT_SYMBOL);
+            pRpcCoreHelper = (RpcCore_T*)(ULONG_PTR)GetProcAddress(hLib, RPC_CORE_EXPORT_SYMBOL);
             if (pRpcCoreHelper != NULL)
             {
                 *ppRpcCoreCtxt = pRpcCoreHelper->RpcCoreInitFn();
@@ -66,13 +66,10 @@ BOOL NTAPI LoadCoreEngine(RpcCore_T** ppRpcCoreHelper, void** ppRpcCoreCtxt, BOO
                     pRpcCoreHelper->RpcCoreUninitFn(*ppRpcCoreCtxt);
                     if (bWow64Helper == pRpcCoreHelper->bWow64Helper)
                     {
-//                        Version.As64BitsValue = pRpcCoreHelper->RuntimeVersion;
                         _cprintf("RpcCore    : %s\n", Win32FindData.cFileName);
-  //                      _cprintf("Version    : %I64X (%u.%u.%u.%u)\n", Version.As64BitsValue, Version.As16BitsValues.Part4, Version.As16BitsValues.Part3, Version.As16BitsValues.Part2, Version.As16BitsValues.Part1);
                         _cprintf("Helper     : 0x%p\n", pRpcCoreHelper);
                         _cprintf("Wow64      : ");
                         if (pRpcCoreHelper->bWow64Helper) _cprintf("TRUE\n"); else _cprintf("FALSE\n");
-      //                  _cprintf("Description: %s\n\n", pRpcCoreHelper->pDescription);
                         *ppRpcCoreHelper = pRpcCoreHelper;
                         bResult = TRUE;
                         goto End;

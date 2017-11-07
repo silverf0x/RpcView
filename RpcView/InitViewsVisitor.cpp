@@ -18,6 +18,7 @@ typedef struct _EnumCtxt_T{
 //------------------------------------------------------------------------------
 static BOOL WINAPI EnumProc(DWORD Pid, DWORD Ppid, EnumCtxt_T* pEnumCtxt, BOOL* pbContinue)
 {
+    UNREFERENCED_PARAMETER(pbContinue);
 	ProcessEntry_C* pProcessEntry = new ProcessEntry_C(Ppid,Pid);
 
 	pEnumCtxt->pInitViewsVisitor->ProcessVector.push_back(pProcessEntry);
@@ -126,6 +127,7 @@ void InitViewsVisitor_C::Visit(InterfacesWidget_C* pInterfacesWidget)
 void InitViewsVisitor_C::Visit(InterfaceInfoWidget_C* pInterfaceInfoWidget)
 {
 	//nothing to do here
+    UNREFERENCED_PARAMETER(pInterfaceInfoWidget);
 }
 
 
@@ -133,6 +135,7 @@ void InitViewsVisitor_C::Visit(InterfaceInfoWidget_C* pInterfaceInfoWidget)
 void InitViewsVisitor_C::Visit(ProcessInfoWidget_C* pProcessInfoWidget)
 {
 	//nothing to do here
+    UNREFERENCED_PARAMETER(pProcessInfoWidget);
 }
 
 
@@ -140,6 +143,7 @@ void InitViewsVisitor_C::Visit(ProcessInfoWidget_C* pProcessInfoWidget)
 void InitViewsVisitor_C::Visit(ProceduresWidget_C* pProceduresWidget)
 {
 	//nothing to do here
+    UNREFERENCED_PARAMETER(pProceduresWidget);
 }
 
 

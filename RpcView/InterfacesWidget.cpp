@@ -51,10 +51,10 @@ void InterfacesWidget_C::InterfaceSelected(const QModelIndex& Index)
 	RPC_IF_ID			RpcIfId;
 	UCHAR*				pUuidStringA;
 	
-	QString&	PidString			= pProxyModel->data( pProxyModel->index(Index.row(), Column_Pid) ).toString();
-				pUuidStringA		= (UCHAR*)pProxyModel->data( pProxyModel->index(Index.row(), Column_Uuid) ).toString().toLatin1().data();
-	QString&	VersionString		= pProxyModel->data( pProxyModel->index(Index.row(), Column_Version) ).toString();
-				VersionStringList	= VersionString.split(".", QString::SkipEmptyParts, Qt::CaseSensitive);
+	QString	PidString			= pProxyModel->data( pProxyModel->index(Index.row(), Column_Pid) ).toString();
+			pUuidStringA		= (UCHAR*)pProxyModel->data( pProxyModel->index(Index.row(), Column_Uuid) ).toString().toLatin1().data();
+	QString	VersionString		= pProxyModel->data( pProxyModel->index(Index.row(), Column_Version) ).toString();
+			VersionStringList	= VersionString.split(".", QString::SkipEmptyParts, Qt::CaseSensitive);
 	
 	if (VersionStringList.isEmpty())
 	{
@@ -248,7 +248,6 @@ bool InterfacesWidget_C::AddInterfaces(RpcInterfaceInfo_T* pRpcInterfaceInfo)
 	int			Index;
 	QString		PidString;
 	WCHAR*		pUuidString				= NULL;
-	WCHAR*		pTransfertSyntaxString	= NULL;
 	WCHAR*		pTypeW					= NULL;
 	WCHAR*		pStubW					= NULL;
 	
@@ -396,9 +395,9 @@ void InterfacesWidget_C::UpdateColumnsVisibility()
 
 
 //------------------------------------------------------------------------------
-void InterfacesWidget_C::SetAddressRepresentation(AddressRepresentation_T AddressRepresentation)
+void InterfacesWidget_C::SetAddressRepresentation(AddressRepresentation_T AddrRepresentation)
 {
-	switch (AddressRepresentation)
+	switch (AddrRepresentation)
 	{
 		case AddressRepresentation_RVA:
 			for (int i = 0; i < pModel->rowCount(); i++)

@@ -43,6 +43,7 @@ void InterfaceSelectedVisitor_C::Visit(EndpointsWidget_C* pEndpointsWidget)
 void InterfaceSelectedVisitor_C::Visit(InterfacesWidget_C* pInterfacesWidget)
 {
 	//nothing todo
+    UNREFERENCED_PARAMETER(pInterfacesWidget);
 }
 
 //------------------------------------------------------------------------------
@@ -119,9 +120,7 @@ void InterfaceSelectedVisitor_C::Visit(ProceduresWidget_C* pProceduresWidget)
 	WCHAR	SymbolName[RPC_MAX_LENGTH];
 	ULONG	ProcIdx;
 	VOID*	ProcFormat		= NULL;
-	LPCWSTR	pProcName		= NULL;
 	VOID*	hPdb			= NULL;
-	UCHAR*	ProcAddress		= NULL;
 
 	if (pRpcInterfaceInfo==NULL) goto End;
 	pProceduresWidget->reset(pRpcInterfaceInfo->Pid);

@@ -230,6 +230,7 @@ typedef struct _EnumCtxt_T{
 //------------------------------------------------------------------------------
 VOID __cdecl RpcDbgPrint(void* pContext, const char* pTxt)
 {
+    UNREFERENCED_PARAMETER(pContext);
     printf("%s\n", pTxt);
 }
 
@@ -292,7 +293,7 @@ End:
 //------------------------------------------------------------------------------
 int DecompileAllInterfaces(RpcCore_T* pRpcCore)
 {
-	EnumCtxt_T				EnumCtxt;
+    EnumCtxt_T				EnumCtxt = {0};
 	RpcDecompilerHelper_T*	pRpcDecompilerHelper;
 	HMODULE					hDecompiler = NULL;
 
@@ -336,6 +337,10 @@ End:
 	char*			pCmdLineA	= NULL;
 	char**			argv		= &pCmdLineA;
 
+    UNREFERENCED_PARAMETER(pCmdLine);
+    UNREFERENCED_PARAMETER(hInstance);
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(nCmdShow);
 	pCmdLineA = GetCommandLineA();
 #endif
 	QApplication app(argc, argv);

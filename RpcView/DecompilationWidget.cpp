@@ -22,6 +22,7 @@ DecompilationWidget_C::DecompilationWidget_C(QWidget *parent) : QDockWidget(Widg
 {
 	QFont font;
 
+    UNREFERENCED_PARAMETER(parent);
 	setObjectName(WidgetName);
 
 	font.setFamily("Courier");
