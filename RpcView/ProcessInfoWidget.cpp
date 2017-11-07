@@ -122,7 +122,7 @@ void ProcessInfoWidget_C::UpdateProcessInfo(RpcProcessInfo_T* pRpcProcessInfo)
 
 	if (pRpcProcessInfo->hIcon!=NULL)
 	{
-		pIconLabel->setPixmap( QPixmap::fromWinHICON( pRpcProcessInfo->hIcon ) );
+		pIconLabel->setPixmap( QtWin::fromHICON( pRpcProcessInfo->hIcon ) );
 		pIconLabel->show();
 		DestroyIcon( pRpcProcessInfo->hIcon );
 	}

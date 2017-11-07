@@ -373,7 +373,7 @@ End:
 	hMainIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ID_MAIN_ICON));
 	if (hMainIcon!=NULL)
 	{
-		pMainWindow->setWindowIcon(QPixmap::fromWinHICON(hMainIcon));
+		pMainWindow->setWindowIcon(QtWin::fromHICON(hMainIcon));
 		DestroyIcon(hMainIcon);
 	}
 	return app.exec();

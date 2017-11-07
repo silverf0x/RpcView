@@ -10,8 +10,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 # Find the QtWidgets library
-# set CMAKE_PREFIX_PATH=c:\Qt\4.8.6
-find_package(Qt4 REQUIRED QtGui QtCore)
+# set CMAKE_PREFIX_PATH=C:\Qt\Qt5.9.1\5.9.1\msvc2015 or c:\Qt\Qt5.9.1\5.9.1\msvc2015_64
+find_package(Qt5Widgets)
     
 add_executable(
 	RpcView
@@ -43,12 +43,4 @@ add_executable(
     RpcViewResource.rc
     )
 
-if(${CMAKE_GENERATOR} MATCHES "Win64")
-    message(STATUS "Target is 64 bits")
-    target_link_libraries(RpcView ../../../Qt/lib/x64/QtGui ../../../Qt/lib/x64/QtCore)
-    target_link_libraries(RpcView Qt4::QtGui Qt4::QtCore)
-else(${CMAKE_GENERATOR} MATCHES "Win64")
-    message(STATUS "Target is 32 bits")
-    target_link_libraries(RpcView ../../../Qt/lib/x86/QtGui ../../../Qt/lib/x86/QtCore)
-    target_link_libraries(RpcView Qt4::QtGui Qt4::QtCore)
-endif(${CMAKE_GENERATOR} MATCHES "Win64")
+target_link_libraries(RpcView Qt5::Widgets $ENV{CMAKE_PREFIX_PATH}/lib/Qt5WinExtras.lib)

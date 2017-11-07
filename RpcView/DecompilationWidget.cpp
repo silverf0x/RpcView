@@ -10,10 +10,10 @@ void DecompilationWidget_C::InsertText(const char* Txt)
 {
 	/*
 	pTextEdit->moveCursor(QTextCursor::End);
-	pTextEdit->append( QString::fromAscii(Txt) );
+	pTextEdit->append( QString::fromLatin1(Txt) );
 	pTextEdit->ensureCursorVisible();
 	*/
-	pTextEdit->setText( QString::fromAscii(Txt) );
+	pTextEdit->setText( QString::fromLatin1(Txt) );
 	pTextEdit->ensureCursorVisible();
 }
 

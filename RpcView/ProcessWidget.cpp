@@ -249,7 +249,7 @@ bool ProcessWidget_C::AddProcess(RpcProcessInfo_T* pRpcProcessInfo)
  
 	if ( pRpcProcessInfo->hIcon!=NULL )	
 	{	
-		AddProcessItem(pProcess,Index,Column_Name, Qt::DecorationRole, QIcon( QPixmap::fromWinHICON( pRpcProcessInfo->hIcon ) ) );
+		AddProcessItem(pProcess,Index,Column_Name, Qt::DecorationRole, QIcon( QtWin::fromHICON( pRpcProcessInfo->hIcon ) ) );
 		DestroyIcon( pRpcProcessInfo->hIcon );
 	}
 

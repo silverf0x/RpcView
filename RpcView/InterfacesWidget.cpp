@@ -129,7 +129,7 @@ bool InterfacesWidget_C::IsInterfacePresent(quint32 Pid, RPC_IF_ID* pIfId)
 
 	if ( UuidToStringA(&pIfId->Uuid,&pUuidString)!=RPC_S_OK ) goto End;
 
-	ItemList = pModel->findItems(QString::fromAscii((const char*)pUuidString), Qt::MatchFixedString, Column_Uuid);
+	ItemList = pModel->findItems(QString::fromLatin1((const char*)pUuidString), Qt::MatchFixedString, Column_Uuid);
 	if (ItemList.isEmpty()) goto End;
 	
 	for (auto Iter=ItemList.begin();Iter!=ItemList.end();Iter++)
@@ -324,7 +324,7 @@ bool InterfacesWidget_C::AddInterfaces(RpcInterfaceInfo_T* pRpcInterfaceInfo)
 	if (pRpcInterfaceInfo->LocationState & MEM_FREE) SetRowColor(Index, QColor(200, 200, 200, 180));
 
 	if (!memcmp(&pRpcInterfaceInfo->TransfertSyntax,&DceRpcSyntaxUuid,sizeof(DceRpcSyntaxUuid)))
-		pModel->setData(pModel->index(Index, Column_TransfertSyntax), QString::fromAscii("DCE"));
+		pModel->setData(pModel->index(Index, Column_TransfertSyntax), QString::fromLatin1("DCE"));
 	else if (!memcmp(&pRpcInterfaceInfo->TransfertSyntax,&Ndr64SyntaxUuid,sizeof(Ndr64SyntaxUuid)))
 		pModel->setData(pModel->index(Index, Column_TransfertSyntax), QString::fromUtf16((const ushort*)L"NDR64"));
 	else 

@@ -447,7 +447,7 @@ void MainWindow_C::ConfigureSymbols()
 	 if ( bOk )
 	 {
 		 pSettings->setValue("SymbolsPath",NewSymbolsPath);
-		 SetEnvironmentVariableA("RpcViewSymbolPath",NewSymbolsPath.toAscii());
+		 SetEnvironmentVariableA("RpcViewSymbolPath",NewSymbolsPath.toLatin1());
 	 }
 }
 
@@ -636,7 +636,7 @@ void MainWindow_C::SetupMenu()
 	hUacIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ID_UAC_ICON));
 	if (hUacIcon!=NULL)
 	{
-		pActionAllProcessesDetails->setIcon(QPixmap::fromWinHICON(hUacIcon));
+		pActionAllProcessesDetails->setIcon(QtWin::fromHICON(hUacIcon));
 		DestroyIcon(hUacIcon);
 	}
 	setMenuBar(pMenuBar);
@@ -733,7 +733,7 @@ MainWindow_C::MainWindow_C(RpcCore_T* pRpcCore)
 
 	QFont font("Helvetica", 20, QFont::Bold);
 #ifndef _DEBUG
-	QSplashScreen SplashScreen(QPixmap::fromWinHICON((HICON)hIcon),Qt::WindowStaysOnTopHint);
+	QSplashScreen SplashScreen(QtWin::fromHICON((HICON)hIcon),Qt::WindowStaysOnTopHint);
 	SplashScreen.showMessage(QString("RpcView"), Qt::AlignCenter, QColor(Qt::lightGray));
 	SplashScreen.setFont(font);
 	SplashScreen.show();
