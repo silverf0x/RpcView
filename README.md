@@ -9,6 +9,8 @@ Or you can download the last [automatically built release](https://ci.appveyor.c
 
 [![Build status](https://ci.appveyor.com/api/projects/status/o5wy6mdk16tuht70?svg=true)](https://ci.appveyor.com/project/silverf0x/rpcview)
 
+**Warning**: you have to install "Microsoft Visual C++ 2015 Redistributable" to use RpcView.
+
 How to add a new RPC runtime
 ----------------------------------
 
@@ -70,7 +72,7 @@ cmake -G"Visual Studio 14 2015 Win64" ../../
 
 To produce the Win32 solution:
 ```
-set CMAKE_PREFIX_PATH=C:\Qt\Qt5.9.1\5.9.1\msvc2015_64
+set CMAKE_PREFIX_PATH=C:\Qt\Qt5.9.1\5.9.1\msvc2015
 ```
 Then from the ```RpcView/Build/x86``` directory:
 ```cmake
