@@ -4,10 +4,11 @@ project(RpcView)
 
 set(RPCVIEW_VERSION_MAJOR   0)
 set(RPCVIEW_VERSION_MINOR   3)
+set(RPCVIEW_VERSION_RELEASE 0)
 if($ENV{APPVEYOR_BUILD_NUMBER})
-    set(RPCVIEW_VERSION_RELEASE $ENV{APPVEYOR_BUILD_NUMBER})
+    set(RPCVIEW_VERSION_BUILD $ENV{APPVEYOR_BUILD_NUMBER})
 else()
-    set(RPCVIEW_VERSION_RELEASE 0)
+    set(RPCVIEW_VERSION_BUILD 0)
 endif()
 
 # configure a header file to pass some of the CMake settings to the source code
