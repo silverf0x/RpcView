@@ -1,7 +1,13 @@
 ﻿RpcView
 =======
 
-RpcView is a free tool to explore and decompile all RPC functionalities present on a Microsoft system.
+RpcView is an open-source tool to explore and decompile all RPC functionalities present on a Microsoft system.
+
+You can get the last [official release](https://github.com/silverf0x/RpcView/releases).
+
+Or you can download the last [automatically built release](https://ci.appveyor.com/project/silverf0x/rpcview/build/artifacts)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/o5wy6mdk16tuht70?svg=true)](https://ci.appveyor.com/project/silverf0x/rpcview)
 
 How to add a new RPC runtime
 ----------------------------------
@@ -25,11 +31,11 @@ Required elements to compiled the project:
 
 * Visual Studio (currently Visual Studio 2015 community)
 * CMake (at least 3.0.2)
-* Qt4 (currently 4.8.6)
+* Qt5 (currently 5.9.1)
 
-Before running CMake you have to set the CMAKE_PREFIX_PATH environment variable with the current Qt path, for instance:
+Before running CMake you have to set the CMAKE_PREFIX_PATH environment variable with the current Qt path, for instance (x64):
 ```
-set CMAKE_PREFIX_PATH=C:\Qt\4.8.6
+set CMAKE_PREFIX_PATH=C:\Qt\Qt5.9.1\5.9.1\msvc2015_64
 ```
 Then you can run CMake to produce the project solution.
 Here is an example to generate the x64 solution with Visual Studio 2015 from the ```RpcView/Build/x64``` directory:
@@ -49,16 +55,6 @@ cmake -G"Visual Studio 14 2015 Win64" ../../
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
 [RpcView]
--- Looking for Q_WS_X11
--- Looking for Q_WS_X11 - not found
--- Looking for Q_WS_WIN
--- Looking for Q_WS_WIN - found
--- Looking for Q_WS_QWS
--- Looking for Q_WS_QWS - not found
--- Looking for Q_WS_MAC
--- Looking for Q_WS_MAC - not found
--- Found Qt4: C:/Qt/4.8.6/bin/qmake.exe (found version "4.8.6")
--- Target is 64 bits
 [RpcDecompiler]
 [RpcCore1_32bits]
 [RpcCore2_32bits]
@@ -72,7 +68,11 @@ cmake -G"Visual Studio 14 2015 Win64" ../../
 -- Build files have been written to: C:/Dev/RpcView/Build/x64
 ```
 
-To produce the Win32 solution with Visual Studio 2015 from the ```RpcView/Build/x86``` directory:
+To produce the Win32 solution:
+```
+set CMAKE_PREFIX_PATH=C:\Qt\Qt5.9.1\5.9.1\msvc2015_64
+```
+Then from the ```RpcView/Build/x86``` directory:
 ```cmake
 cmake -G"Visual Studio 14 2015" ../../
 -- The C compiler identification is MSVC 19.0.24215.1
@@ -88,16 +88,6 @@ cmake -G"Visual Studio 14 2015" ../../
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
 [RpcView]
--- Looking for Q_WS_X11
--- Looking for Q_WS_X11 - not found
--- Looking for Q_WS_WIN
--- Looking for Q_WS_WIN - found
--- Looking for Q_WS_QWS
--- Looking for Q_WS_QWS - not found
--- Looking for Q_WS_MAC
--- Looking for Q_WS_MAC - not found
--- Found Qt4: C:/Qt/4.8.6/bin/qmake.exe (found version "4.8.6")
--- Target is 32 bits
 [RpcDecompiler]
 [RpcCore1_32bits]
 [RpcCore2_32bits]
