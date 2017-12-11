@@ -8,6 +8,10 @@
 #include "../RpcCommon/Misc.h"
 #include "Pdb.h"
 #include <Dbghelp.h>
+#include <strsafe.h>
+
+static WCHAR    FullPath[MAX_PATH];
+static RPC_WSTR	pUuidString = NULL;
 
 //------------------------------------------------------------------------------
 InterfaceSelectedVisitor_C::InterfaceSelectedVisitor_C(quint32 Pid, RPC_IF_ID* pIf,RpcCore_T* pRpcCore,void* pRpcCoreCtxt)
@@ -18,12 +22,15 @@ InterfaceSelectedVisitor_C::InterfaceSelectedVisitor_C(quint32 Pid, RPC_IF_ID* p
 	this->pRpcCoreCtxt	= pRpcCoreCtxt;
 
 	this->pRpcInterfaceInfo = pRpcCore->RpcCoreGetInterfaceInfoFn( pRpcCoreCtxt, Pid, pIf, RPC_INTERFACE_INFO_ALL );
+    UuidToStringW(&pIf->Uuid, &pUuidString);
+    GetFullPathNameW(L"RpcView.ini", _countof(FullPath), FullPath, NULL);
 }
 
 
 //------------------------------------------------------------------------------
 InterfaceSelectedVisitor_C::~InterfaceSelectedVisitor_C()
 {
+    RpcStringFreeW(&pUuidString);
 	if (pRpcInterfaceInfo != NULL)
 	{
 		pRpcCore->RpcCoreFreeInterfaceInfoFn(pRpcCoreCtxt, pRpcInterfaceInfo);
@@ -146,6 +153,12 @@ void InterfaceSelectedVisitor_C::Visit(ProceduresWidget_C* pProceduresWidget)
 					{
 						PdbGetSymbolName(hPdb, (UCHAR*)pRpcInterfaceInfo->pLocationBase + pRpcInterfaceInfo->ppProcAddressTable[ProcIdx], SymbolName, sizeof(SymbolName));
 					}
+                    if (SymbolName[0] == 0) {
+                        WCHAR   ProcIdxName[10];
+
+                        StringCbPrintfW(ProcIdxName, sizeof(ProcIdxName), L"Proc%u", ProcIdx);
+                        GetPrivateProfileStringW((LPCWSTR)pUuidString, ProcIdxName, NULL, SymbolName, sizeof(SymbolName)/sizeof(SymbolName[0]), FullPath);
+                    }
 					if ( (pRpcInterfaceInfo->pFormatStringOffsetTable==NULL)||
 						 (pRpcInterfaceInfo->pProcFormatString==NULL)) 
 					{
