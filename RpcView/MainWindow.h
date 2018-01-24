@@ -51,6 +51,7 @@ private slots:
 	void SetUpdateSpeedAsBelowNormal();
 	void SetUpdateSpeedAsSlow();
 	void SetUpdateSpeedAsVerySlow();
+    void SetUpdateSpeedAsManual();
 	void ShowColumnsDialog();
 	void UpdateColumns();
 	//--
@@ -86,6 +87,7 @@ private:
 	QAction*				pActionSpeedBelowNormal;	
 	QAction*				pActionSpeedSlow;
 	QAction*				pActionSpeedVerySlow;
+    QAction*				pActionSpeedManual;
 	QAction*				pAddressAbsolute;
 	QAction*				pAddressRva;
 

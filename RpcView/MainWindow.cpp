@@ -19,6 +19,7 @@
 #define BELOW_NORMAL_REFRESH_SPEED	2000
 #define SLOW_REFRESH_SPEED			5000
 #define VERY_SLOW_REFRESH_SPEED		10000
+#define MANUAL_REFRESH_SPEED		0
 #define SHELL_EXECUTE_SUCCESS		((HINSTANCE)42)		// According to the doc, welcome the 16-bit compatibilty
 
 
@@ -458,6 +459,7 @@ void MainWindow_C::ConfigureSymbols()
 void MainWindow_C::SetUpdateSpeedAsFast()
 {
 	this->RefreshSpeedInMs = FAST_REFRESH_SPEED;
+    pRefreshTimer->start();
 	pRefreshTimer->setInterval(this->RefreshSpeedInMs);
 }
 
@@ -466,6 +468,7 @@ void MainWindow_C::SetUpdateSpeedAsFast()
 void MainWindow_C::SetUpdateSpeedAsNormal()
 {
 	this->RefreshSpeedInMs = NORMAL_REFRESH_SPEED;
+    pRefreshTimer->start();
 	pRefreshTimer->setInterval(this->RefreshSpeedInMs);
 }
 
@@ -474,6 +477,7 @@ void MainWindow_C::SetUpdateSpeedAsNormal()
 void MainWindow_C::SetUpdateSpeedAsBelowNormal()
 {
 	this->RefreshSpeedInMs = BELOW_NORMAL_REFRESH_SPEED;
+    pRefreshTimer->start();
 	pRefreshTimer->setInterval(this->RefreshSpeedInMs);
 }
 
@@ -482,6 +486,7 @@ void MainWindow_C::SetUpdateSpeedAsBelowNormal()
 void MainWindow_C::SetUpdateSpeedAsSlow()
 {
 	this->RefreshSpeedInMs = SLOW_REFRESH_SPEED;
+    pRefreshTimer->start();
 	pRefreshTimer->setInterval(this->RefreshSpeedInMs);
 }
 
@@ -490,7 +495,15 @@ void MainWindow_C::SetUpdateSpeedAsSlow()
 void MainWindow_C::SetUpdateSpeedAsVerySlow()
 {
 	this->RefreshSpeedInMs = VERY_SLOW_REFRESH_SPEED;
+    pRefreshTimer->start();
 	pRefreshTimer->setInterval(this->RefreshSpeedInMs);
+}
+
+//------------------------------------------------------------------------------
+void MainWindow_C::SetUpdateSpeedAsManual()
+{
+    this->RefreshSpeedInMs = MANUAL_REFRESH_SPEED;
+    pRefreshTimer->stop();
 }
 
 
@@ -583,12 +596,14 @@ void MainWindow_C::SetupMenu()
 	pActionSpeedBelowNormal = pSubMenupdateSpeed->addAction("2 seconds", this, SLOT(SetUpdateSpeedAsBelowNormal()));
 	pActionSpeedSlow		= pSubMenupdateSpeed->addAction("5 seconds", this, SLOT(SetUpdateSpeedAsSlow()));
 	pActionSpeedVerySlow	= pSubMenupdateSpeed->addAction("10 seconds", this, SLOT(SetUpdateSpeedAsVerySlow()));
+    pActionSpeedManual      = pSubMenupdateSpeed->addAction("manual", this, SLOT(SetUpdateSpeedAsManual()));
 
 	pActionSpeedFast->setCheckable(true);
 	pActionSpeedNormal->setCheckable(true);
 	pActionSpeedBelowNormal->setCheckable(true);
 	pActionSpeedSlow->setCheckable(true);
 	pActionSpeedVerySlow->setCheckable(true);
+    pActionSpeedManual->setCheckable(true);
 
 	QActionGroup*	pSpeedActionGroup = new QActionGroup(this);
 
@@ -597,6 +612,7 @@ void MainWindow_C::SetupMenu()
 	pSpeedActionGroup->addAction(pActionSpeedBelowNormal);
 	pSpeedActionGroup->addAction(pActionSpeedSlow);
 	pSpeedActionGroup->addAction(pActionSpeedVerySlow);
+    pSpeedActionGroup->addAction(pActionSpeedManual);
 	//
 	// View
 	//
@@ -655,6 +671,7 @@ void MainWindow_C::InitMenuRefreshSpeed()
 		case BELOW_NORMAL_REFRESH_SPEED	:	pActionSpeedBelowNormal->setChecked(true);	break;
 		case SLOW_REFRESH_SPEED			:	pActionSpeedSlow->setChecked(true);			break;
 		case VERY_SLOW_REFRESH_SPEED	:	pActionSpeedVerySlow->setChecked(true);		break;
+        case MANUAL_REFRESH_SPEED       :	pActionSpeedManual->setChecked(true);		break;
 		//--
 		default:
 		break;
@@ -798,7 +815,7 @@ MainWindow_C::MainWindow_C(RpcCore_T* pRpcCore)
 	//
 	pRefreshTimer = new QTimer(this);
     connect(pRefreshTimer, SIGNAL(timeout()), this, SLOT(RefreshViews()));
-	pRefreshTimer->start(this->RefreshSpeedInMs);
+	if (this->RefreshSpeedInMs) pRefreshTimer->start(this->RefreshSpeedInMs);
 	
 	InitColumnsDialog();
 }
