@@ -34,7 +34,7 @@ InitViewsVisitor_C::InitViewsVisitor_C(RpcCore_T* pRpcCore,void** ppRpcCoreCtxt)
 	this->pRpcCore= pRpcCore;
 
 	this->NbOfInterfaces = 0;
-	this->pRpcCoreCtxt = pRpcCore->RpcCoreInitFn();
+	this->pRpcCoreCtxt = pRpcCore->RpcCoreInitFn(pRpcCore->bForceLoading);
 	if (this->pRpcCoreCtxt==NULL) goto End;
 	*ppRpcCoreCtxt = this->pRpcCoreCtxt;
 

@@ -333,15 +333,16 @@ End:
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 #else
-	int				argc		= 1;
-	char*			pCmdLineA	= NULL;
-	char**			argv		= &pCmdLineA;
+	int				argc		= 0;
+	//char*			pCmdLineA	= NULL;
+	char*			argv[100] = { 0 };
 
     UNREFERENCED_PARAMETER(pCmdLine);
     UNREFERENCED_PARAMETER(hInstance);
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(nCmdShow);
-	pCmdLineA = GetCommandLineA();
+	pCmdLine = GetCommandLineW();
+	LPWSTR* argvw = CommandLineToArgvW(pCmdLine, &argc);
 #endif
 	QApplication app(argc, argv);
     QSettings   Settings(RPC_VIEW_ORGANIZATION_NAME, RPC_VIEW_APPLICATION_NAME);
@@ -371,8 +372,21 @@ End:
 		_CrtDumpMemoryLeaks();
 		return 0;
 	}
+#else
+	//argc is corrupted ? 
+	//if (argc>1)
+	{
+		if (argvw[1] && !wcsncmp(argvw[1], L"/f", 2))
+		{
+			gRpcCoreManager.bForceLoading = TRUE;
+		}
+		else
+		{
+			_cprintf("Usage %s: [/f]\n", argv[0]);
+			_cprintf("  /f : force loading for unsupported runtime versions \n");
+		}
+	}
 #endif
-
     pMainWindow = new MainWindow_C(&gRpcCoreManager);
 
 	hMainIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ID_MAIN_ICON));

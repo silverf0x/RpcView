@@ -13,7 +13,7 @@ typedef struct _RpcCoreManager_T{
 }RpcCoreManager_T; 
 
 // RpcCore
-VOID*				__fastcall RpcCoreInit();						//returns a private context for the RpcCoreEngine
+VOID*				__fastcall RpcCoreInit(BOOL bForce);						//returns a private context for the RpcCoreEngine
 VOID				__fastcall RpcCoreUninit(VOID* pRpcCoreCtxt);
 RpcProcessInfo_T*	__fastcall RpcCoreGetProcessInfo(void* pRpcCoreCtxt, DWORD Pid, DWORD Ppid, ULONG ProcessInfoMask);
 VOID				__fastcall RpcCoreFreeProcessInfo(void* pRpcCoreCtxt, RpcProcessInfo_T* pRpcProcessInfo);
@@ -29,6 +29,7 @@ RpcCore_T	gRpcCoreManager =
     0,
     //"Generic RpcCore Manager",
     FALSE,
+	FALSE,
     &RpcCoreInit,
     &RpcCoreUninit,
     &RpcCoreGetProcessInfo,
@@ -41,7 +42,7 @@ RpcCore_T	gRpcCoreManager =
 };
 
 //------------------------------------------------------------------------------
-BOOL NTAPI LoadCoreEngine(RpcCore_T** ppRpcCoreHelper, void** ppRpcCoreCtxt, BOOL bWow64Helper)
+BOOL NTAPI LoadCoreEngine(RpcCore_T** ppRpcCoreHelper, void** ppRpcCoreCtxt, BOOL bWow64Helper, BOOL bForce)
 {
     WIN32_FIND_DATAA	Win32FindData;
     HMODULE				hLib;
@@ -60,7 +61,7 @@ BOOL NTAPI LoadCoreEngine(RpcCore_T** ppRpcCoreHelper, void** ppRpcCoreCtxt, BOO
             pRpcCoreHelper = (RpcCore_T*)(ULONG_PTR)GetProcAddress(hLib, RPC_CORE_EXPORT_SYMBOL);
             if (pRpcCoreHelper != NULL)
             {
-                *ppRpcCoreCtxt = pRpcCoreHelper->RpcCoreInitFn();
+                *ppRpcCoreCtxt = pRpcCoreHelper->RpcCoreInitFn(bForce);
                 if (*ppRpcCoreCtxt != NULL)
                 {
                     pRpcCoreHelper->RpcCoreUninitFn(*ppRpcCoreCtxt);
@@ -86,13 +87,13 @@ End:
 
 
 //-----------------------------------------------------------------------------
-VOID* __fastcall RpcCoreInit()
+VOID* __fastcall RpcCoreInit(BOOL bForce)
 {
     RpcCoreManager_T*   pRpcCoreManager;
 
     pRpcCoreManager = (RpcCoreManager_T*)OS_ALLOC(sizeof(RpcCoreManager_T));
 
-    if (!LoadCoreEngine(&pRpcCoreManager->pNativeCore, &pRpcCoreManager->pNativeCoreCtxt, FALSE))
+    if (!LoadCoreEngine(&pRpcCoreManager->pNativeCore, &pRpcCoreManager->pNativeCoreCtxt, FALSE, bForce))
     {
 		const char Caption[]	= "Unsupported runtime version";
 #ifdef _WIN64
@@ -107,14 +108,14 @@ VOID* __fastcall RpcCoreInit()
 #endif
 		ExitProcess(0);
     }
-    pRpcCoreManager->pNativeCoreCtxt = pRpcCoreManager->pNativeCore->RpcCoreInitFn();
+	pRpcCoreManager->pNativeCoreCtxt = pRpcCoreManager->pNativeCore->RpcCoreInitFn(bForce);
 #ifdef _WIN64
-    if (!LoadCoreEngine(&pRpcCoreManager->pWow64Core, &pRpcCoreManager->pWow64CoreCtxt, TRUE))
+    if (!LoadCoreEngine(&pRpcCoreManager->pWow64Core, &pRpcCoreManager->pWow64CoreCtxt, TRUE,bForce))
     {
         OS_FREE(pRpcCoreManager);
         return NULL;
     }
-    pRpcCoreManager->pWow64CoreCtxt = pRpcCoreManager->pWow64Core->RpcCoreInitFn();
+	pRpcCoreManager->pWow64CoreCtxt = pRpcCoreManager->pWow64Core->RpcCoreInitFn(bForce);
 #endif
     return (pRpcCoreManager);
 }
