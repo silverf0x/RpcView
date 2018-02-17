@@ -302,7 +302,7 @@ int DecompileAllInterfaces(RpcCore_T* pRpcCore)
 
 	EnumCtxt.pRpcDecompilerHelper	= pRpcDecompilerHelper;
     EnumCtxt.pRpcCore               = pRpcCore;
-    EnumCtxt.pRpcCoreCtxt           = pRpcCore->RpcCoreInitFn();
+    EnumCtxt.pRpcCoreCtxt           = pRpcCore->RpcCoreInitFn(FALSE);
     if (EnumCtxt.pRpcCoreCtxt==NULL) goto End;
 
 	_cprintf("Start scanning...\n");
@@ -367,17 +367,26 @@ End:
 #ifdef _DEBUG
 	if (argc>1)
 	{
-		if (!_stricmp(argv[1],"/DA"))
+		for (int curArg = 1; curArg < argc; curArg++)
 		{
-            DecompileAllInterfaces(&gRpcCoreManager);
+			if (!_stricmp(argv[1], "/DA"))
+			{
+				DecompileAllInterfaces(&gRpcCoreManager);
+				_CrtDumpMemoryLeaks();
+			}
+			else if (!_stricmp(argv[1], "/f"))
+			{
+				gRpcCoreManager.bForceLoading = TRUE;
+			}
+			else
+			{
+				_cprintf("Usage %s: [/f] [/DA]\n", argv[0]);
+				_cprintf("  /f : force loading for unsupported runtime versions \n");
+				_cprintf("  /DA : decompile all interfaces\n");
+			}
 		}
-		else
-		{
-			_cprintf("Usage %s: [/DA]\n",argv[0]);
-			_cprintf("  /DA : decompile all interfaces\n");
-		}
-		_CrtDumpMemoryLeaks();
-		return 0;
+		//
+		//return 0;
 	}
 #else
 	if (argc>1)
