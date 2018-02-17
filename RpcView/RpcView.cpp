@@ -328,21 +328,28 @@ End:
 	HICON			hMainIcon;
 	UCHAR			CurrentDirectory[MAX_PATH];
 	UCHAR*			pSeparator;
-
+	int ret = 0;
 #ifdef _DEBUG
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 #else
 	int				argc		= 0;
-	//char*			pCmdLineA	= NULL;
-	char*			argv[100] = { 0 };
-
-    UNREFERENCED_PARAMETER(pCmdLine);
+	
     UNREFERENCED_PARAMETER(hInstance);
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(nCmdShow);
 	pCmdLine = GetCommandLineW();
+
 	LPWSTR* argvw = CommandLineToArgvW(pCmdLine, &argc);
+
+	char** argv = (char**)malloc(argc*sizeof(char*));
+	for (int i = 0; i < argc; i++)
+	{
+		size_t tmpSize = lstrlenW(argvw[i]) * 2 + 2;
+		argv[i] = (char*)malloc(tmpSize);
+		wcstombs_s(&tmpSize, argv[i], tmpSize, argvw[i], tmpSize);
+	}
+		
 #endif
 	QApplication app(argc, argv);
     QSettings   Settings(RPC_VIEW_ORGANIZATION_NAME, RPC_VIEW_APPLICATION_NAME);
@@ -373,8 +380,7 @@ End:
 		return 0;
 	}
 #else
-	//argc is corrupted ? 
-	//if (argc>1)
+	if (argc>1)
 	{
 		if (argvw[1] && !wcsncmp(argvw[1], L"/f", 2))
 		{
@@ -395,5 +401,12 @@ End:
 		pMainWindow->setWindowIcon(QtWin::fromHICON(hMainIcon));
 		DestroyIcon(hMainIcon);
 	}
-	return app.exec();
+	ret =  app.exec();
+
+#ifndef _DEBUG
+	for (int i = 0; i < argc; i++)
+		free(argv[i]);
+	free(argv);
+#endif
+	return ret;
 }
