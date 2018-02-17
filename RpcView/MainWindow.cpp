@@ -22,6 +22,15 @@
 #define MANUAL_REFRESH_SPEED		0
 #define SHELL_EXECUTE_SUCCESS		((HINSTANCE)42)		// According to the doc, welcome the 16-bit compatibilty
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	extern    RpcCore_T	gRpcCoreManager;
+
+#ifdef __cplusplus
+}
+#endif
 
 extern ULONG	NTAPI DecompilerExceptionFilter(EXCEPTION_POINTERS* pExceptionPointers);
 extern HMODULE	NTAPI LoadDecompilerEngine(RpcDecompilerHelper_T** ppRpcDecompilerHelper);
@@ -300,7 +309,10 @@ void MainWindow_C::ViewDetailsForAllProcesses()
 	UCHAR		FilePath[MAX_PATH];
 	
 	GetModuleFileNameA(NULL,(LPSTR)FilePath,_countof(FilePath));
-	hInstance = ShellExecuteA(NULL, "runas", (LPCSTR)FilePath, 0, 0, SW_SHOWNORMAL);
+	if (gRpcCoreManager.bForceLoading)
+		hInstance = ShellExecuteA(NULL, "runas", (LPCSTR)FilePath, "/f", 0, SW_SHOWNORMAL);
+	else
+		hInstance = ShellExecuteA(NULL, "runas", (LPCSTR)FilePath, 0, 0, SW_SHOWNORMAL);
 	if ( hInstance == SHELL_EXECUTE_SUCCESS)
 	{
 		Exit();
