@@ -52,7 +52,7 @@ typedef BOOL (WINAPI* EnumSimpleDictCallbackFn_T)(HANDLE hProcess, UINT Index, V
 BOOL	WINAPI EnumSimpleDict(HANDLE hProcess, SIMPLE_DICT_T* pSimpleDict, EnumSimpleDictCallbackFn_T EnumSimpleDictCallbackFn, VOID* pContext);
 
 // RpcCore
-VOID*				__fastcall RpcCoreInit();						//returns a private context for the RpcCoreEngine
+VOID*				__fastcall RpcCoreInit(BOOL bForce);						//returns a private context for the RpcCoreEngine
 VOID				__fastcall RpcCoreUninit(VOID* pRpcCoreCtxt);
 RpcProcessInfo_T*	__fastcall RpcCoreGetProcessInfo(void* pRpcCoreCtxt,DWORD Pid,DWORD Ppid,ULONG ProcessInfoMask);
 VOID				__fastcall RpcCoreFreeProcessInfo(void* pRpcCoreCtxt,RpcProcessInfo_T* pRpcProcessInfo);
@@ -73,6 +73,7 @@ RpcCore_T	RpcCoreHelper =
 {
 	RPC_CORE_RUNTIME_VERSION,
 	RPC_CORE_IS_WOW64,
+	FALSE,
 	&RpcCoreInit,
 	&RpcCoreUninit,
 	&RpcCoreGetProcessInfo,
@@ -270,7 +271,7 @@ End:
 
 
 //------------------------------------------------------------------------------
-VOID* __fastcall RpcCoreInit()
+VOID* __fastcall RpcCoreInit(BOOL bForce)
 {
 	UINT64					RuntimVersion;
 	RpcCoreInternalCtxt_T*	pRpcCoreInternalCtxt=NULL;
@@ -290,6 +291,11 @@ VOID* __fastcall RpcCoreInit()
 	RuntimVersion=GetModuleVersion(RpcRuntimePath);
 	for (i = 0; i < sizeof(RPC_CORE_RUNTIME_VERSION); i++)
 	{
+		if (bForce && ((RuntimVersion & 0xFFFFFFFF00000000) == (RPC_CORE_RUNTIME_VERSION[i] & 0xFFFFFFFF00000000)))
+		{
+			bFound = TRUE;
+			break;
+		}
 		if (RuntimVersion == RPC_CORE_RUNTIME_VERSION[i])
 		{
 			bFound = TRUE;

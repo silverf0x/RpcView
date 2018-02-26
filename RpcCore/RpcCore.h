@@ -178,7 +178,7 @@ typedef BOOL (__fastcall* RpcCoreEnumProcessAuthInfoCallbackFn_T)(DWORD Pid, Rpc
 // Type definitions
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef VOID*				(__fastcall* RpcCoreInitFn_T)();
+typedef VOID*				(__fastcall* RpcCoreInitFn_T)(BOOL bForce);
 typedef VOID				(__fastcall* RpcCoreUninitFn_T)(VOID* pRpcCoreCtxt);
 typedef RpcProcessInfo_T*	(__fastcall* RpcCoreGetProcessInfoFn_T)(void* pRpcCoreCtxt, DWORD Pid, DWORD Ppid,ULONG ProcessInfoMask);
 typedef VOID				(__fastcall* RpcCoreFreeProcessInfoFn_T)(void* pRpcCoreCtxt, RpcProcessInfo_T* pRpcProcessInfo);
@@ -193,6 +193,7 @@ typedef struct _RpcCore_T{
 	UINT64*								RuntimeVersion;		//the supported version (forx example 0x600011DB04001LL (6.1.7600.16385) for Windows 7 64bits )
 	//const char*							pDescription;
 	BOOL								bWow64Helper;
+	BOOL								bForceLoading;
 	RpcCoreInitFn_T						RpcCoreInitFn;
 	RpcCoreUninitFn_T					RpcCoreUninitFn;
 	RpcCoreGetProcessInfoFn_T			RpcCoreGetProcessInfoFn;

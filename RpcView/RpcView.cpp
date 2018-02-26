@@ -302,7 +302,7 @@ int DecompileAllInterfaces(RpcCore_T* pRpcCore)
 
 	EnumCtxt.pRpcDecompilerHelper	= pRpcDecompilerHelper;
     EnumCtxt.pRpcCore               = pRpcCore;
-    EnumCtxt.pRpcCoreCtxt           = pRpcCore->RpcCoreInitFn();
+    EnumCtxt.pRpcCoreCtxt           = pRpcCore->RpcCoreInitFn(FALSE);
     if (EnumCtxt.pRpcCoreCtxt==NULL) goto End;
 
 	_cprintf("Start scanning...\n");
@@ -328,20 +328,28 @@ End:
 	HICON			hMainIcon;
 	UCHAR			CurrentDirectory[MAX_PATH];
 	UCHAR*			pSeparator;
-
+	int ret = 0;
 #ifdef _DEBUG
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 #else
-	int				argc		= 1;
-	char*			pCmdLineA	= NULL;
-	char**			argv		= &pCmdLineA;
-
-    UNREFERENCED_PARAMETER(pCmdLine);
+	int				argc		= 0;
+	
     UNREFERENCED_PARAMETER(hInstance);
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(nCmdShow);
-	pCmdLineA = GetCommandLineA();
+	pCmdLine = GetCommandLineW();
+
+	LPWSTR* argvw = CommandLineToArgvW(pCmdLine, &argc);
+
+	char** argv = (char**)malloc(argc*sizeof(char*));
+	for (int i = 0; i < argc; i++)
+	{
+		size_t tmpSize = lstrlenW(argvw[i]) * 2 + 2;
+		argv[i] = (char*)malloc(tmpSize);
+		wcstombs_s(&tmpSize, argv[i], tmpSize, argvw[i], tmpSize);
+	}
+		
 #endif
 	QApplication app(argc, argv);
     QSettings   Settings(RPC_VIEW_ORGANIZATION_NAME, RPC_VIEW_APPLICATION_NAME);
@@ -359,20 +367,41 @@ End:
 #ifdef _DEBUG
 	if (argc>1)
 	{
-		if (!_stricmp(argv[1],"/DA"))
+		for (int curArg = 1; curArg < argc; curArg++)
 		{
-            DecompileAllInterfaces(&gRpcCoreManager);
+			if (!_stricmp(argv[1], "/DA"))
+			{
+				DecompileAllInterfaces(&gRpcCoreManager);
+				_CrtDumpMemoryLeaks();
+			}
+			else if (!_stricmp(argv[1], "/f"))
+			{
+				gRpcCoreManager.bForceLoading = TRUE;
+			}
+			else
+			{
+				_cprintf("Usage %s: [/f] [/DA]\n", argv[0]);
+				_cprintf("  /f : force loading for unsupported runtime versions \n");
+				_cprintf("  /DA : decompile all interfaces\n");
+			}
+		}
+		//
+		//return 0;
+	}
+#else
+	if (argc>1)
+	{
+		if (argvw[1] && !wcsncmp(argvw[1], L"/f", 2))
+		{
+			gRpcCoreManager.bForceLoading = TRUE;
 		}
 		else
 		{
-			_cprintf("Usage %s: [/DA]\n",argv[0]);
-			_cprintf("  /DA : decompile all interfaces\n");
+			_cprintf("Usage %s: [/f]\n", argv[0]);
+			_cprintf("  /f : force loading for unsupported runtime versions \n");
 		}
-		_CrtDumpMemoryLeaks();
-		return 0;
 	}
 #endif
-
     pMainWindow = new MainWindow_C(&gRpcCoreManager);
 
 	hMainIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(ID_MAIN_ICON));
@@ -381,5 +410,12 @@ End:
 		pMainWindow->setWindowIcon(QtWin::fromHICON(hMainIcon));
 		DestroyIcon(hMainIcon);
 	}
-	return app.exec();
+	ret =  app.exec();
+
+#ifndef _DEBUG
+	for (int i = 0; i < argc; i++)
+		free(argv[i]);
+	free(argv);
+#endif
+	return ret;
 }
