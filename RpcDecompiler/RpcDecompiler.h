@@ -24,7 +24,7 @@ typedef struct _RpcDecompilerInfo_T{
 	UINT64					pModuleBase;
 	UINT					NDRVersion;
 	UINT					MIDLVersion;
-	UINT					NDRFags;
+	UINT					NDRFags;					// Typo here !
 	UINT					NumberOfProcedures;
 	RVA_T*					ppProcAddressTable;			//A table containing the address of each function
 	RVA_T*					ppDispatchProcAddressTable;
