@@ -473,16 +473,25 @@ DecompileInit(
 
 	if (!Context->ModuleBaseAddress)
     {
-		return GetLastError();
+		return -1;
     }
 		
-
-	Context->DescriptorAddress = Context->DescriptorOffset;
-	Context->FormatStrAddress = Context->FormatStrOffset;
-	if (!Context->bAbsoluteAddress)
+	
+	if (Context->bAbsoluteAddress)
 	{
-		Context->DescriptorAddress += Context->ModuleBaseAddress;
-		Context->FormatStrAddress += Context->ModuleBaseAddress;
+		Context->DescriptorAddress = Context->DescriptorArg;
+		Context->DescriptorOffset = Context->DescriptorAddress - Context->ModuleBaseAddress;
+
+		Context->FormatStrAddress = Context->FormatStrArg;
+		Context->FormatStrOffset = Context->FormatStrAddress - Context->ModuleBaseAddress;
+	}
+	else 
+	{
+		Context->DescriptorOffset = Context->DescriptorArg;
+		Context->DescriptorAddress = Context->DescriptorOffset + Context->ModuleBaseAddress;
+
+		Context->FormatStrOffset = Context->FormatStrArg;
+		Context->FormatStrAddress = Context->FormatStrOffset + Context->ModuleBaseAddress;
 	}
 
 	return 0;
@@ -679,11 +688,11 @@ int main(int argc, char* argv[])
 		}
 		else if (!_stricmp(CurrentArgument, "--descriptor"))
 		{
-			Context.DescriptorOffset = (size_t) strtoumax(argv[ArgIndex + 1], &EndPtr, 16);
+			Context.DescriptorArg = (size_t) strtoumax(argv[ArgIndex + 1], &EndPtr, 16);
 		}
 		else if (!_stricmp(CurrentArgument, "--format-str"))
 		{
-			Context.FormatStrOffset = (size_t) strtoumax(argv[ArgIndex + 1], &EndPtr, 16);
+			Context.FormatStrArg = (size_t) strtoumax(argv[ArgIndex + 1], &EndPtr, 16);
 		}
 		else if (!_stricmp(CurrentArgument, "--absolute"))
 		{
