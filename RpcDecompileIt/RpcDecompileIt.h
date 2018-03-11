@@ -44,6 +44,10 @@ typedef struct _DECOMPILE_IT_CTXT {
 		};
 	};
 
+	uint16_t *FormatStrOffsets;
+
+	size_t NumberOfProcedures;
+
 } DECOMPILE_IT_CTXT, *PDECOMPILE_IT_CTXT;
 #pragma warning ( pop )
 

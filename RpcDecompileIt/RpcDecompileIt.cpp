@@ -1,5 +1,6 @@
 #include "RpcDecompileIt.h"
 
+#include <string.h>  
 #include <iostream>
 #include <TlHelp32.h>
 
@@ -180,16 +181,20 @@ DecompileIt(
 
 
 	std::string IfaceName("DecompileItInterface");
-	IdlInterface Interface(IfaceName, RpcInterfaceId, 1);
+	IdlInterface Interface(IfaceName, RpcInterfaceId, Context.NumberOfProcedures);
 
 	
 	// Init stubs for RpcDecompiler
 	RpcDecompilerInfo_T		RpcDecompilerInfoStub;
-	RpcDecompilerInfoStub.ppProcNameTable = new WCHAR*[1];
-	RpcDecompilerInfoStub.ppProcNameTable[0] = NULL;
+	RpcDecompilerInfoStub.ppProcNameTable = new WCHAR*[Context.NumberOfProcedures];
+	for (size_t i = 0; i < Context.NumberOfProcedures; i++)
+	{
+		RpcDecompilerInfoStub.ppProcNameTable[i] = NULL;
+	}
+	
 
-	RpcDecompilerInfoStub.pFormatStringOffsetTable = new USHORT[1];
-	RpcDecompilerInfoStub.pFormatStringOffsetTable[0] = 0;
+	RpcDecompilerInfoStub.pFormatStringOffsetTable = Context.FormatStrOffsets;
+	//RpcDecompilerInfoStub.pFormatStringOffsetTable[0] = 0;
 	RpcDecompilerInfoStub.pProcFormatString = (RVA_T) Context.FormatStrOffset;
 
 	RpcDecompilerInfoStub.pTypeFormatString = (RVA_T) (MidlStubDesc.pFormatTypes - Context.ModuleBaseAddress);
@@ -237,17 +242,19 @@ int main(int argc, char* argv[])
 
 	if (argc < 7)
 	{
-		printf("Usage: %s --pid PID [--module MODULE] --descriptor DESC_OFFSET --format-str FORMAT_STRING_OFFSET [--absolute]\n", argv[0]);
+		printf("Usage: %s --pid PID [--module MODULE] --descriptor DESC_OFFSET --format-str FORMAT_STRING_OFFSET [--absolute] [--format-str-offsets OFF1,OFF2,OFFn]\n", argv[0]);
 		printf("  --pid : PID of the target process. %s must be able to open a handle to read the target process memory.\n", argv[0]);
 		printf("  --module : module name to read memory from. If not set, %s read the target executable own module. Ignored if --absolute is set.\n", argv[0]);
 		printf("  --descriptor : offset to the rpc header descriptor for the interface. If --absolute is set, --descriptor is interpreted as a virtual address.\n");
 		printf("  --format-str : offset to the rpc format string for the chosen proc. If --absolute is set, --format-str is interpreted as a virtual address.\n");
 		printf("  --absolute : treat descriptor and format-str as absolute virtual addresses instead of offsets.\n");
+		printf("  --format-str-offsets : offsets within the format string for the various procedures (default:0).\n");
 
 		return 0;
 	}
 
 
+	bool bFormatStrOffsetsProvided = false;
 	for (auto ArgIndex = 0; ArgIndex < argc; ArgIndex++) 
 	{
 		char *CurrentArgument = argv[ArgIndex];
@@ -272,6 +279,49 @@ int main(int argc, char* argv[])
 		{
 			Context.bAbsoluteAddress = true;
 		}
+		else if (!_stricmp(CurrentArgument, "--format-str-offsets"))
+		{
+			char *token = NULL, *previous_token = NULL;
+			size_t OffsetCount = 0;
+			bFormatStrOffsetsProvided = true;
+
+			// counting offsets
+			token = argv[ArgIndex + 1];
+			do {
+				OffsetCount++;
+				previous_token = token + 1;
+				token = strchr(previous_token, ',');
+			} while (token);
+
+			Context.NumberOfProcedures = OffsetCount;
+			Context.FormatStrOffsets = new uint16_t[OffsetCount];
+
+			
+			// registering offsets
+			OffsetCount = 0;
+			token = argv[ArgIndex + 1];
+			//token = strchr(previous_token, ',');
+			do {
+				Context.FormatStrOffsets[OffsetCount] = (uint16_t)strtoumax(token, &EndPtr, 16);
+
+				OffsetCount++;
+				previous_token = token;
+				token = strchr(previous_token, ',');
+				if (token)
+				{
+					token += strlen(",");
+				}
+
+			} while (token);
+
+		}
+	}
+
+	if (!bFormatStrOffsetsProvided)
+	{
+		Context.NumberOfProcedures = 1;
+		Context.FormatStrOffsets = new uint16_t[1];
+		Context.FormatStrOffsets[0] = 0;
 	}
 
 
