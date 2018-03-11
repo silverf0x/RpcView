@@ -5,8 +5,7 @@ message("[RpcDecompileIt]")
 add_executable(RpcDecompileIt 
     RpcDecompileIt.cpp
     DecompileItRpcStub.cpp
-    ../RpcCommon/Misc.c
-    ../RpcView/Pdb.c
+	RpcDecompileIt.h
 )
 			
 
@@ -17,3 +16,6 @@ target_link_libraries(RpcDecompileIt
 	Dbghelp.lib
 )
 
+target_include_directories(RpcDecompileIt PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}/../"
+)
