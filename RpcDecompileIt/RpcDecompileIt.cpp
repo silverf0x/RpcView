@@ -12,7 +12,7 @@
 	#define RPC_CORE_IS_WOW64 true
 #endif
 
-int
+bool
 DecompileInit(
 	_Inout_ PDECOMPILE_IT_CTXT Context
 )
@@ -71,7 +71,7 @@ DecompileInit(
 
 	if (!Context->ModuleBaseAddress)
     {
-		return -1;
+		return false;
     }
 		
 	
@@ -92,44 +92,94 @@ DecompileInit(
 		Context->FormatStrAddress = Context->FormatStrOffset + Context->ModuleBaseAddress;
 	}
 
-	return 0;
+	return true;
 }
 
 
 
-int 
+bool
+ReadRpcInterface(
+	_In_  RpcViewHelper_T *RpcViewHelper,
+	_In_  RpcModuleInfo_T  ModuleInfo,
+	_In_  MIDL_STUB_DESC   MidlDescription,
+	_Out_ RPC_IF_ID		  *RpcInterface
+)
+{
+	size_t					RpcInterfaceInformationStructSize;
+	RPC_CLIENT_INTERFACE    RpcClientInterface;
+
+
+	if (!RpcInterface || !RpcViewHelper)
+	{
+		return false;
+	}
+
+	// Read RPC_CLIENT_INTERFACE.size to know how many bytes we need to read
+	if (!RpcViewHelper->RpcGetProcessData(
+		&ModuleInfo,
+		(RVA_T) ( (uintptr_t) MidlDescription.RpcInterfaceInformation - ModuleInfo.pModuleBase),
+		&RpcInterfaceInformationStructSize,
+		sizeof(RpcClientInterface.Length)
+	))
+	{
+		return false;
+	}
+
+
+	switch (RpcInterfaceInformationStructSize)
+	{
+	// RPC_SERVER_INTERFACE and RPC_CLIENT_INTERFACE are pretty much the same structure
+	//case sizeof(RPC_SERVER_INTERFACE):
+	case sizeof(RPC_CLIENT_INTERFACE):
+
+		// Read the full structure
+		if (!RpcViewHelper->RpcGetProcessData(
+			&ModuleInfo,
+			(RVA_T)((uintptr_t)MidlDescription.RpcInterfaceInformation - ModuleInfo.pModuleBase),
+			&RpcClientInterface,
+			sizeof(RPC_CLIENT_INTERFACE)
+		))
+		{
+			return false;
+		}
+		
+		RpcInterface->Uuid = RpcClientInterface.InterfaceId.SyntaxGUID;
+		RpcInterface->VersMajor = RpcClientInterface.InterfaceId.SyntaxVersion.MajorVersion;
+		RpcInterface->VersMinor= RpcClientInterface.InterfaceId.SyntaxVersion.MinorVersion;
+
+		break;
+
+	default:
+		return false;
+	}
+	
+	return true;
+}
+
+bool 
 DecompileIt(
 	_In_ DECOMPILE_IT_CTXT Context
 )
 {
-	uintptr_t 				DecompilerHelperAddr = NULL;
-	RpcDecompilerHelper_T* 	DecompilerHelper = NULL;
-	//
-	//RpcInterfaceInfo_T*		RpcInterfaceInfo = NULL;
-	//void* 					RpcDecompilerContext;
+	//uintptr_t 				DecompilerHelperAddr = NULL;
+	//RpcDecompilerHelper_T* 	DecompilerHelper = NULL;
 	MIDL_STUB_DESC			MidlStubDesc;
 	size_t					StubDescBytesRead;
-	size_t					RpcInterfaceInformationStructSize;
-	RPC_CLIENT_INTERFACE    RpcClientInterface;
-	//RPC_SERVER_INTERFACE	RpcServerInterface;
 	RPC_IF_ID				RpcInterfaceId;
-	ASSIGN_RPC_VIEW_STUB(RpcViewHelperStub, &Context);
+	RpcDecompilerInfo_T		RpcDecompilerInfoStub;
+	RpcDecompilerCtxt_T 	DecompilerStubContext;
+	RpcViewHelper_T 		RpcViewHelperStub;
+
+	RpcModuleInfo_T 	ModuleInfoStub = {
+		/*Pid = */			Context.TargetPID,
+		/*pModuleBase = */	Context.ModuleBaseAddress
+	};
 
 
-	// resolve RpcDecompilerHelper address
-	HMODULE hRpcDecompiler = LoadLibrary("RpcDecompiler");
-	if (!hRpcDecompiler)
-	{
-		return -1;
-	}
+	// init RpcView helper stubs in order to use RpcGetProcessData
+	DecompileItInitRpcViewStub(&RpcViewHelperStub, (PVOID) &Context);
 
-	DecompilerHelperAddr = (uintptr_t) GetProcAddress(hRpcDecompiler, "RpcDecompilerHelper");
-	if (!DecompilerHelperAddr)
-	{
-		return -1;
-	}
-	DecompilerHelper = (RpcDecompilerHelper_T*) DecompilerHelperAddr;
-
+	// Read MIDL_STUB_DESC and RPC_INTERFACE structures from remote target
 	if (!ReadProcessMemory(
 		Context.hTargetProcess,
 		(LPCVOID)Context.DescriptorAddress,
@@ -138,54 +188,23 @@ DecompileIt(
 		(SIZE_T*) &StubDescBytesRead
 	))
 	{
-		return -1;
+		printf("[x] Could not read MIDL_STUB_DESC structure from desc-offset rva.\n");
+		return false;
 	}
 
-	if (!ReadProcessMemory(
-		Context.hTargetProcess,
-		MidlStubDesc.RpcInterfaceInformation,
-		&RpcInterfaceInformationStructSize,
-		sizeof(RpcInterfaceInformationStructSize),
-		(SIZE_T*) &StubDescBytesRead
+	if (!ReadRpcInterface(
+		&RpcViewHelperStub,
+		ModuleInfoStub,
+		MidlStubDesc,
+		&RpcInterfaceId
 	))
 	{
-		return -1;
+		printf("[x] Could not retrieve a RPC_INTERFACE for the  MIDL_STUB_DESC structure.\n");
+		return false;
 	}
-
-	switch (RpcInterfaceInformationStructSize)
-	{
-	case sizeof(RPC_CLIENT_INTERFACE):
-
-		if (!ReadProcessMemory(
-			Context.hTargetProcess,
-			MidlStubDesc.RpcInterfaceInformation,
-			&RpcClientInterface,
-			sizeof(RpcClientInterface),
-			(SIZE_T*) &StubDescBytesRead
-		))
-		{
-			return -1;
-		}
-		
-		RpcInterfaceId.Uuid = RpcClientInterface.InterfaceId.SyntaxGUID;
-		RpcInterfaceId.VersMajor = RpcClientInterface.InterfaceId.SyntaxVersion.MajorVersion;
-		RpcInterfaceId.VersMinor= RpcClientInterface.InterfaceId.SyntaxVersion.MinorVersion;
-
-		//RpcDecompilerInfoStub.pSyntaxId = &RpcClientInterface.InterfaceId;
-		break;
-
-	//case sizeof(RPC_SERVER_INTERFACE):
-	default:
-		return -1;
-	}
-
-
-	std::string IfaceName("DecompileItInterface");
-	IdlInterface Interface(IfaceName, RpcInterfaceId, Context.NumberOfProcedures);
 
 	
 	// Init stubs for RpcDecompiler
-	RpcDecompilerInfo_T		RpcDecompilerInfoStub;
 	RpcDecompilerInfoStub.ppProcNameTable = new WCHAR*[Context.NumberOfProcedures];
 	for (size_t i = 0; i < Context.NumberOfProcedures; i++)
 	{
@@ -194,33 +213,27 @@ DecompileIt(
 	
 
 	RpcDecompilerInfoStub.pFormatStringOffsetTable = Context.FormatStrOffsets;
-	//RpcDecompilerInfoStub.pFormatStringOffsetTable[0] = 0;
 	RpcDecompilerInfoStub.pProcFormatString = (RVA_T) Context.FormatStrOffset;
-
 	RpcDecompilerInfoStub.pTypeFormatString = (RVA_T) (MidlStubDesc.pFormatTypes - Context.ModuleBaseAddress);
 
-	RpcModuleInfo_T ModuleInfoStub = {
-		/*Pid = */Context.TargetPID,
-		/*pModuleBase = */Context.ModuleBaseAddress
-	};
-
-	RpcDecompilerCtxt_T DecompilerStubContext;
 	DecompilerStubContext.pRpcDecompilerInfo = &RpcDecompilerInfoStub;
 	DecompilerStubContext.pRpcModuleInfo = &ModuleInfoStub;
 	DecompilerStubContext.pRpcViewHelper = &RpcViewHelperStub;
 
 
 	// Decode function
+	std::string IfaceName("DecompileItInterface");
+	IdlInterface Interface(IfaceName, RpcInterfaceId, Context.NumberOfProcedures);
 	if (DS_SUCCESS == Interface.decode((PVOID)&DecompilerStubContext))
 	{
 		std::cout << Interface;
 
 	}
 	
-	return 0;
+	return true;
 }
 
-int
+bool
 DecompileUninit(
 	_In_ DECOMPILE_IT_CTXT Context
 )
@@ -230,7 +243,7 @@ DecompileUninit(
 		CloseHandle(Context.hTargetProcess);
 	}
 
-	return 0;
+	return true;
 }
 
 
@@ -238,7 +251,7 @@ int main(int argc, char* argv[])
 {
 	DECOMPILE_IT_CTXT Context = {0};
 	char*  	EndPtr;
-	int 	status;
+	bool 	status;
 
 	if (argc < 7)
 	{
@@ -281,38 +294,36 @@ int main(int argc, char* argv[])
 		}
 		else if (!_stricmp(CurrentArgument, "--format-str-offsets"))
 		{
-			char *token = NULL, *previous_token = NULL;
-			size_t OffsetCount = 0;
 			bFormatStrOffsetsProvided = true;
 
-			// counting offsets
-			token = argv[ArgIndex + 1];
-			do {
-				OffsetCount++;
-				previous_token = token + 1;
-				token = strchr(previous_token, ',');
-			} while (token);
+			// parsing offsets using STL since strtok sucks.
+			std::string offsets_str(argv[ArgIndex + 1]);
+			std::vector<std::string> offsets;
 
-			Context.NumberOfProcedures = OffsetCount;
-			Context.FormatStrOffsets = new uint16_t[OffsetCount];
+			auto last_pos = 0;
+			auto pos = offsets_str.find(',');
 
-			
-			// registering offsets
-			OffsetCount = 0;
-			token = argv[ArgIndex + 1];
-			//token = strchr(previous_token, ',');
-			do {
-				Context.FormatStrOffsets[OffsetCount] = (uint16_t)strtoumax(token, &EndPtr, 16);
+			while (pos != std::string::npos) {
+				offsets.push_back(offsets_str.substr(last_pos, pos - last_pos));
+				last_pos = ++pos;
+				pos = offsets_str.find(',', pos);
 
-				OffsetCount++;
-				previous_token = token;
-				token = strchr(previous_token, ',');
-				if (token)
+				if (pos == std::string::npos)
 				{
-					token += strlen(",");
+					offsets.push_back(
+						offsets_str.substr(last_pos, offsets_str.length())
+					);
 				}
+					
+			}
 
-			} while (token);
+			Context.NumberOfProcedures = offsets.size();
+			Context.FormatStrOffsets = new uint16_t[Context.NumberOfProcedures];
+
+			for (size_t i = 0; i < offsets.size(); i++)
+			{
+				Context.FormatStrOffsets[i] = (uint16_t)strtoumax(offsets[i].c_str(), &EndPtr, 0);
+			}
 
 		}
 	}
@@ -325,18 +336,17 @@ int main(int argc, char* argv[])
 	}
 
 
-	status = DecompileInit(
+	if (!DecompileInit(
 		&Context
-	);
-	if (status)
+	))
 	{
 		printf("Could not init the DecompileIt context : %d.\n", GetLastError());
-		return status;
+		return -1;
 	}
 
 	status = DecompileIt(Context);
 
 
 	DecompileUninit(Context);
-	return status;
+	return !status;
 }
