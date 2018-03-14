@@ -20,6 +20,8 @@ DecompileInit(
 	WCHAR RefModuleName[MAX_PATH];
 	HMODULE hMods[1024];
 	DWORD 	ModulesSize;
+	BOOL	bOwnProcessWow64 = false;
+	BOOL	bRemoteProcessWow64 = false;
 
 	HANDLE hProcess = OpenProcess(
 		PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
@@ -29,9 +31,27 @@ DecompileInit(
 
 	if (hProcess==NULL)
 	{
-		return GetLastError();
+		printf("[x] Could not access the remote process : %d\n", GetLastError());
+		return false;
 	}
-	Context -> hTargetProcess = hProcess;
+	Context->hTargetProcess = hProcess;
+
+	IsWow64Process(GetCurrentProcess(), &bOwnProcessWow64);
+	IsWow64Process(hProcess, &bRemoteProcessWow64);
+
+	if (bOwnProcessWow64 != bRemoteProcessWow64)
+	{
+		#define	PROCESS_ARCH(bIsWow64) (bIsWow64) ? "Wow64" : "x64"
+
+		printf("[x] Remote process does not have the same arch as own process : %s != %s\n",
+			PROCESS_ARCH(bRemoteProcessWow64),
+			PROCESS_ARCH(bOwnProcessWow64)
+		);
+		return false;
+	}
+
+
+	
 
 
 	if (!EnumProcessModules(hProcess, hMods, sizeof(hMods), &ModulesSize))
@@ -105,8 +125,8 @@ ReadRpcInterface(
 	_Out_ RPC_IF_ID		  *RpcInterface
 )
 {
-	size_t					RpcInterfaceInformationStructSize;
-	RPC_CLIENT_INTERFACE    RpcClientInterface;
+	unsigned int			RpcInterfaceInformationStructSize = 0;
+	RPC_CLIENT_INTERFACE    RpcClientInterface = {0};
 
 
 	if (!RpcInterface || !RpcViewHelper)
@@ -214,7 +234,7 @@ DecompileIt(
 
 	RpcDecompilerInfoStub.pFormatStringOffsetTable = Context.FormatStrOffsets;
 	RpcDecompilerInfoStub.pProcFormatString = (RVA_T) Context.FormatStrOffset;
-	RpcDecompilerInfoStub.pTypeFormatString = (RVA_T) (MidlStubDesc.pFormatTypes - Context.ModuleBaseAddress);
+	RpcDecompilerInfoStub.pTypeFormatString = (RVA_T) ((uintptr_t)MidlStubDesc.pFormatTypes - Context.ModuleBaseAddress);
 
 	DecompilerStubContext.pRpcDecompilerInfo = &RpcDecompilerInfoStub;
 	DecompilerStubContext.pRpcModuleInfo = &ModuleInfoStub;
@@ -300,8 +320,8 @@ int main(int argc, char* argv[])
 			std::string offsets_str(argv[ArgIndex + 1]);
 			std::vector<std::string> offsets;
 
-			auto last_pos = 0;
-			auto pos = offsets_str.find(',');
+			size_t last_pos = 0;
+			size_t pos = offsets_str.find(',');
 
 			while (pos != std::string::npos) {
 				offsets.push_back(offsets_str.substr(last_pos, pos - last_pos));
