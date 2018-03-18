@@ -231,6 +231,11 @@ DecompileIt(
 		RpcDecompilerInfoStub.ppProcNameTable[i] = NULL;
 	}
 	
+#ifdef _AMD64_
+	RpcDecompilerInfoStub.bIs64Bits = TRUE;
+#else
+	RpcDecompilerInfoStub.bIs64Bits = FALSE;
+#endif
 
 	RpcDecompilerInfoStub.pFormatStringOffsetTable = Context.FormatStrOffsets;
 	RpcDecompilerInfoStub.pProcFormatString = (RVA_T) Context.FormatStrOffset;
@@ -239,6 +244,13 @@ DecompileIt(
 	DecompilerStubContext.pRpcDecompilerInfo = &RpcDecompilerInfoStub;
 	DecompilerStubContext.pRpcModuleInfo = &ModuleInfoStub;
 	DecompilerStubContext.pRpcViewHelper = &RpcViewHelperStub;
+
+
+	// is it a 64 bits application ?
+	is64B = RpcDecompilerInfoStub.bIs64Bits;
+
+	// robust flags case
+	robustFlagWasSet = (RpcDecompilerInfoStub.NDRVersion >= NDR_VERSION_5_2) ? TRUE : FALSE;
 
 
 	// Decode function
