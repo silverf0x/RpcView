@@ -250,7 +250,7 @@ DecompileIt(
 	is64B = RpcDecompilerInfoStub.bIs64Bits;
 
 	// robust flags case
-	robustFlagWasSet = (RpcDecompilerInfoStub.NDRVersion >= NDR_VERSION_5_2) ? TRUE : FALSE;
+	robustFlagWasSet = (MidlStubDesc.Version >= NDR_VERSION_5_2) ? TRUE : FALSE;
 
 
 	// Decode function
