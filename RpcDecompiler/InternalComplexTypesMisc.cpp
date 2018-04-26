@@ -597,7 +597,25 @@ BOOL __fastcall processCorrelationDescriptorNaked(
 	{
 
 	case FC_DEREFERENCE:
-		oss << "*" << strCorrelationItem;
+
+		// the correlation item describing the size of the current item
+		// can derive from an out parameter. In that case, we can only set it
+		// has a max range and not the exact size since it's not known before the call.
+		// Ex :
+		//	HRESULT	Proc0 (
+		//		[in] int arg1,
+		//		[out] int *arg2,
+		//		[out][size_is( , *arg2)] int **arg2
+		//	);
+		if (paramDesc.isOut()) 
+		{
+			oss << ", *" << strCorrelationItem;
+		}
+		else
+		{
+			oss << "*" << strCorrelationItem;
+		}
+		
 		break;
 
 	case FC_ADD_1:
