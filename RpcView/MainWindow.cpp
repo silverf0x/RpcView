@@ -44,7 +44,7 @@ void MainWindow_C::InterfaceSelected(quint32 Pid, RPC_IF_ID* pIf)
 {
 	CHAR SymbolPath[MAX_PATH] = {0};
 	
-	if (GetEnvironmentVariableA("RpcViewSymbolPath",&SymbolPath,sizeof(SymbolPath))==0)
+	if (GetEnvironmentVariableA("RpcViewSymbolPath",SymbolPath,sizeof(SymbolPath))==0)
 	{
 		StatusBar.showMessage("Symbol path not configured.");
 	}
