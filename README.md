@@ -3,7 +3,7 @@
 
 RpcView is an open-source tool to explore and decompile all RPC functionalities present on a Microsoft system.
 
-Tou can download the last [automatically built release](https://ci.appveyor.com/project/silverf0x/rpcview/build/artifacts)
+You can download the last [automatically built release](https://ci.appveyor.com/project/silverf0x/rpcview/build/artifacts)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/o5wy6mdk16tuht70?svg=true)](https://ci.appveyor.com/project/silverf0x/rpcview)
 
