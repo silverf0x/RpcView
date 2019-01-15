@@ -39,7 +39,6 @@ extern "C" {
 	BOOL	__fastcall RpcDecompilerPrintOneProcedure(VOID* pRpcDecompilerCtxt, UINT ProcIndex, std::list<TypeToDefine>& listProcType, std::ostringstream& ossProc);
 	BOOL	__fastcall RpcDecompilerDecodeOneProcedureInlined(VOID*	pContext, UINT	ProcIndex, IdlFunctionDesc& IdlFunctionDesc, std::list<TypeToDefine>& listProcType);
 	BOOL	__fastcall RpcDecompilerPrintOneProcedureInlined(VOID* pContext, UINT ProcOffset, IdlFunctionDesc& IdlFunctionDesc,	std::list<TypeToDefine>& listProcType, std::ostringstream& ossProc);
-	BOOL	__fastcall RpcDecompilerPrintHiddenFUProcedure(VOID* pRpcDecompilerCtxt, UINT * procOffset, std::list<TypeToDefine>& listProcType, std::ostringstream& ossProc);
 
 	BOOL	__fastcall RpcDecompilerPrintAllProceduresNew(VOID* pRpcDecompilerCtxt);
 
@@ -443,128 +442,6 @@ END:
 
 End:
 		return (bResult);
-	}
-
-
-	BOOL	__fastcall RpcDecompilerPrintHiddenFUProcedure(VOID* pContext, UINT * procOffset, std::list<TypeToDefine>& listProcType, std::ostringstream& ossProc)
-	{
-		UINT					paramSizeInBytes	= RPC_DECOMPILER_INVALID_PARAM_SIZE;
-		BOOL					bResult				= FALSE;
-		RpcDecompilerCtxt_T*	pRpcDecompilerCtxt	= (RpcDecompilerCtxt_T*)pContext;
-
-		UINT					paramOffset			= 0;
-		UINT					numParam			= 0;
-		BOOL					isReturnParam		= FALSE;
-		BOOL					nextIsReturnParam	= FALSE;
-		UINT					sizeOfProcDescr		= 0;
-
-		IdlFunctionDesc			IdlFunctionDesc;
-
-
-		if (pRpcDecompilerCtxt == NULL) goto End;
-		if (pRpcDecompilerCtxt->pRpcViewHelper == NULL) goto End;
-		if (pRpcDecompilerCtxt->pRpcDecompilerInfo == NULL) goto End;
-		if (pRpcDecompilerCtxt->pRpcDecompilerInfo->pProcFormatString == NULL) goto End;
-
-		RVA_T pFunction = pRpcDecompilerCtxt->pRpcDecompilerInfo->pProcFormatString + *procOffset;
-		// carriage return before display function
-		//ossProc << "\t/* Function 0x" << std::hex << ProcIndex<< " */"<< std::endl;
-		ossProc << std::endl;
-		//RpcDecompilerPrintFunctionDbgInfo(pContext, *procOffset, ossProc);
-		ossProc << "\t /* Function index : 0x" << std::hex << *procOffset;
-		ossProc << "\t Module Base : 0x" << (unsigned long) pRpcDecompilerCtxt->pRpcDecompilerInfo->pModuleBase;
-		ossProc << "\t RVA of proc in format string : 0x" << (unsigned long) ((UINT64)pFunction - pRpcDecompilerCtxt->pRpcDecompilerInfo->pModuleBase);
-		ossProc << "  */"<<std::endl;
-
-		//todo
-		bResult = RpcDecompilerDecodeAndPrintPrototypeReturnType(
-			/* in */ pRpcDecompilerCtxt, 
-			/* in */ *procOffset, 
-			/* out */ &paramOffset, 
-			/* out */ &sizeOfProcDescr,
-			/* out */ IdlFunctionDesc,
-			/* in/out */listProcType,
-			/* in/out */ ossProc);
-
-		if (bResult == FALSE) goto End;
-
-		ossProc << " _HiddenFunction_" << std::dec << *procOffset << "(";
-
-		// Increment procOffset to read the next procedure description
-		*procOffset += sizeOfProcDescr;
-
-		if (bResult == FALSE) goto End;
-
-		RPC_DEBUG_FN((UCHAR*)"\nRpcDecompilerPrintProcedure: RpcDecompilerPrintPrototypeName returned nbParamToPrint = %d\n", IdlFunctionDesc.getNbParam());
-
-
-		if(IdlFunctionDesc.getNbParam() == 0)
-		{
-			//No parameter to be printed
-			ossProc << " void ";
-		}
-
-
-		//Print each parameter
-		while( (numParam < IdlFunctionDesc.getNbParam()) )
-		{
-			RPC_DEBUG_FN((UCHAR*)"\nRpcDecompilerPrintProcedure: numParam = 0x%x on total to print = 0x%x\n", numParam, IdlFunctionDesc.getNbParam());
-
-			bResult = RpcDecompilerGetReturnParamInfo(/* in */ pRpcDecompilerCtxt, /* in */ paramOffset, /* in */ paramDescrOif, /* out */ &isReturnParam);
-			if (bResult == FALSE) goto End;
-
-			if( ! isReturnParam)
-			{
-				//Print the parameter
-				bResult = RpcDecompilerPrintParam(
-					/* in */ pRpcDecompilerCtxt, 
-					/* in */ paramOffset, 
-					/* in */ paramDescrOif, 
-					/* out */ &paramSizeInBytes, 
-					/* in  */ IdlFunctionDesc,
-					listProcType, 
-					ossProc); //TODO : décompiler paramDescrOi en plus de paramDescrOif
-
-				if (bResult == FALSE || paramSizeInBytes == RPC_DECOMPILER_INVALID_PARAM_SIZE)
-				{
-					displayErrorMessage(ossProc, "RpcDecompilerPrintOneProcedure : unable to decode param");
-					goto End;
-				}
-			}
-			else
-			{
-				paramSizeInBytes = OIF_PARAM_SIZE; //TODO : traiter le cas où codage pas OIF
-			}
-			paramOffset += paramSizeInBytes;//paramSizeInBytes;
-			numParam++;
-			RPC_DEBUG_FN((UCHAR*)"\nRpcDecompilerPrintProcedure: paramOffset = %d, numParam = %d\n", paramOffset, numParam);
-
-			//Is there one additionnal parameter to be printed ?
-			if ( (! isReturnParam) && (numParam < IdlFunctionDesc.getNbParam()) )
-			{
-				//The last parameter has been printed because it was not a return parameter
-				//There is still at least 1 parameter to be printed
-				bResult = RpcDecompilerGetReturnParamInfo(/* in */ pRpcDecompilerCtxt, /* in */ paramOffset, /* in */ paramDescrOif, /* out */ &nextIsReturnParam);
-				if (bResult == FALSE) goto End;
-
-				if (! nextIsReturnParam)
-				{
-					//The next parameter will have to be printed because it is not a return parameter
-					ossProc << ", ";
-				}
-
-			}
-		}//while(numParam <= IdlFunctionDesc.getNbParam());
-
-
-		// Print the end of the procedure prototype
-		ossProc<<");"<<std::endl;
-
-		bResult = TRUE;
-
-End:
-		return (bResult);
-
 	}
 
 	//------------------------------------------------------------------------------
