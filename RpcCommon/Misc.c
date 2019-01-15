@@ -307,7 +307,7 @@ BOOL WINAPI GetUserAndDomainName(DWORD Pid, WCHAR* Buffer, ULONG BufferLengthInB
 	pTokenUser=(TOKEN_USER*)OS_ALLOC(Bytes);
 	if (pTokenUser==NULL) goto End;
 	if (!GetTokenInformation(hToken,TokenUser,pTokenUser,Bytes,&Bytes)) goto End;
-	dwSize=sizeof(UserName);
+	dwSize=_countof(UserName);
 	if (!LookupAccountSidW(NULL,pTokenUser->User.Sid,UserName,&dwSize,DomainName,&dwSize,&SidType)) goto End;
 	StringCbPrintfW(Buffer,BufferLengthInBytes,L"%s\\%s",DomainName,UserName);
 	bResult=TRUE;
