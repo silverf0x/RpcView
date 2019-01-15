@@ -1104,6 +1104,7 @@ UINT __fastcall getArrayMemorySize(
 	case FC_LGVARRAY:
 		RPC_GET_PROCESS_DATA(pType, &longArray, sizeof(LGFixedSizedArrayHeader_t));
 		arraySize = longArray.totalSize;
+        break;
 	default:
 		arraySize = POINTER_SIZE;
 		break;
