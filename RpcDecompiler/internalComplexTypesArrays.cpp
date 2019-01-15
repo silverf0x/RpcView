@@ -1043,7 +1043,7 @@ BOOL __fastcall processComplexArray(
 	oss<<" /* ";
 
 	for(j; j<i; j++){
-		if(callbacksCalled[j] != -1)
+		if(callbacksCalled[j] != (UINT16)-1)
 		{
 			oss<<" callback_"<<std::dec<<callbacksCalled[j]<<" used, ";
 		}
