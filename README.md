@@ -1,5 +1,4 @@
-﻿RpcView
-=======
+﻿# RpcView
 
 RpcView is an open-source tool to explore and decompile all RPC functionalities present on a Microsoft system.
 
@@ -7,10 +6,9 @@ You can download the last [automatically built release](https://ci.appveyor.com/
 
 [![Build status](https://ci.appveyor.com/api/projects/status/o5wy6mdk16tuht70?svg=true)](https://ci.appveyor.com/project/silverf0x/rpcview)
 
-**Warning**: you have to install "Microsoft Visual C++ 2015 Redistributable" to use RpcView.
+> **Warning**: you have to install "Microsoft Visual C++ 2015 Redistributable" to use RpcView.
 
-How to add a new RPC runtime
-----------------------------------
+## How to add a new RPC runtime
 
 Basically you have two possibilities to support a new RPC runtime (rpcrt4.dll) version:
 
@@ -24,8 +22,7 @@ Currently, the supported versions are organized as follows:
 - RpcCore3 for Windows 8
 - RpcCore4 for Windows 8.1 and 10
 
-Compilation
---------------
+## Compilation
 
 Required elements to compiled the project:
 
@@ -33,11 +30,14 @@ Required elements to compiled the project:
 * CMake (at least 3.0.2)
 * Qt5 (currently 5.9.1)
 
-Before running CMake you have to set the CMAKE_PREFIX_PATH environment variable with the current Qt path, for instance (x64):
+Before running CMake you have to set the CMAKE_PREFIX_PATH environment variable with the Qt **full path**, for instance (x64):
 ```
 set CMAKE_PREFIX_PATH=C:\Qt\Qt5.9.1\5.9.1\msvc2015_64
 ```
-Then you can run CMake to produce the project solution.
+Before running CMake to produce the project solution you have to create the buikd directories:
+- ```RpcView/Build/x64``` for 64-bit targets
+- ```RpcView/Build/x86``` for 32-bit targets.
+
 Here is an example to generate the x64 solution with Visual Studio 2015 from the ```RpcView/Build/x64``` directory:
 
 ```cmake
@@ -105,8 +105,8 @@ cmake --build . --config Release
 
 RpcView32 binaries are produced in the ```RpcView/Build/bin/x86``` directory and RpcView64 ones in the ```RpcView/Build/bin/x64```
 
-Acknowledgements
-----------------------
+## Acknowledgements
+
 * Jeremy
 * Julien
 * Yoanne

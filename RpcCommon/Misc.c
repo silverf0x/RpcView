@@ -50,7 +50,7 @@ BOOL WINAPI EnumProcess(EnumProcessCallbackFn_T EnumProcessCallbackFn,void* pCal
 	BOOL				bContinue=TRUE;
 
 	hSnapshot=CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
-	if (hSnapshot==NULL) goto End;
+    if (hSnapshot == INVALID_HANDLE_VALUE) goto End;
 	ProcessEntry.dwSize=sizeof(ProcessEntry);
 	if (!Process32FirstW(hSnapshot,&ProcessEntry)) goto End;
 	do
@@ -61,7 +61,7 @@ BOOL WINAPI EnumProcess(EnumProcessCallbackFn_T EnumProcessCallbackFn,void* pCal
 
 	}while(Process32NextW(hSnapshot,&ProcessEntry));
 End:
-	if (hSnapshot!=NULL) CloseHandle(hSnapshot);
+    if (hSnapshot != INVALID_HANDLE_VALUE) CloseHandle(hSnapshot);
 	return (bResult);
 }
 
@@ -161,74 +161,6 @@ BOOL WINAPI GetLocationInfo(HANDLE hProcess, VOID* pAddress, LocationInfo_T* pLo
 End:
 	return (bResult);
 }
-
-typedef VOID (WINAPI* RtlGetUnloadEventTraceExFn_T)(
-	_Out_  PULONG *ElementSize,
-	_Out_  PULONG *ElementCount,
-	_Out_  PVOID *EventTrace
-	);
-
-#pragma pack(1)
-typedef struct _RTL_UNLOAD_EVENT_TRACE {
-	void*	BaseAddress;	// Base address of dll
-	SIZE_T	SizeOfImage;	// Size of image
-	ULONG	Sequence;		// Sequence number for this event
-	ULONG	TimeDateStamp;	// Time and date of image
-	ULONG	CheckSum;		// Image checksum
-	WCHAR	ImageName[32];	// Image name
-} RTL_UNLOAD_EVENT_TRACE, *PRTL_UNLOAD_EVENT_TRACE;
-#pragma pack()
-
-
-//------------------------------------------------------------------------------
-BOOL WINAPI GetUnloadedLocationInfo(HANDLE hProcess, VOID* pAddress, LocationInfo_T* pLocationInfo)
-{
-	RtlGetUnloadEventTraceExFn_T	RtlGetUnloadEventTraceExFn	= NULL;
-	ULONG*							pElementSize				= NULL;
-	ULONG*							pElementCount				= NULL;
-	UCHAR*							pEventTrace					= NULL;
-	RTL_UNLOAD_EVENT_TRACE*			pUnloadEventTrace			= NULL;
-	ULONG							ElementSize					= 0;
-	ULONG							ElementCount				= 0;
-	BOOL							bResult						= FALSE;
-	ULONG							i							= 0;
-
-	RtlGetUnloadEventTraceExFn = (RtlGetUnloadEventTraceExFn_T)GetProcAddress(GetModuleHandleA("ntdll.dll"), "RtlGetUnloadEventTraceEx");
-	if (RtlGetUnloadEventTraceExFn == NULL) goto End;
-	//
-	// Get addresses of ElementSize, ElementCount and pEventTrace in the ntdll
-	//
-	RtlGetUnloadEventTraceExFn(&pElementSize, &pElementCount, &pEventTrace);
-	//
-	// Read their values in the target process
-	//
-	if (!ReadProcessMemory(hProcess, pElementSize, &ElementSize, sizeof(ElementSize), NULL)) goto End;
-	pUnloadEventTrace = (RTL_UNLOAD_EVENT_TRACE*)OS_ALLOC(ElementSize);
-	if (pUnloadEventTrace == NULL) goto End;
-	if (!ReadProcessMemory(hProcess, pElementCount, &ElementCount, sizeof(ElementCount), NULL)) goto End;
-	if (!ReadProcessMemory(hProcess, pEventTrace, &pEventTrace, sizeof(pEventTrace), NULL)) goto End;
-	//
-	// Look for the unloaded module
-	//
-	for (i = 0; i < ElementCount; i++)
-	{
-		if (!ReadProcessMemory(hProcess, pEventTrace, pUnloadEventTrace, ElementSize, NULL)) goto End;
-		if (pUnloadEventTrace->BaseAddress == NULL) break;
-		if (((SIZE_T)pAddress >= (SIZE_T)pUnloadEventTrace->BaseAddress) &&
-			((SIZE_T)pAddress < ((SIZE_T)pUnloadEventTrace->BaseAddress + pUnloadEventTrace->SizeOfImage)))
-		{
-			pLocationInfo->pBaseAddress = pUnloadEventTrace->BaseAddress;
-			pLocationInfo->Size = pUnloadEventTrace->SizeOfImage;
-			memcpy(pLocationInfo->Location, pUnloadEventTrace->ImageName, sizeof(pLocationInfo->Location));
-			break;
-		}
-		pEventTrace += ElementSize;
-	}
-End:
-	if (pUnloadEventTrace != NULL) OS_FREE(pUnloadEventTrace);
-	return (bResult);
-}
-
 
 //------------------------------------------------------------------------------
 UINT64 WINAPI GetModuleVersion(WCHAR* pModulePath)
@@ -375,7 +307,7 @@ BOOL WINAPI GetUserAndDomainName(DWORD Pid, WCHAR* Buffer, ULONG BufferLengthInB
 	pTokenUser=(TOKEN_USER*)OS_ALLOC(Bytes);
 	if (pTokenUser==NULL) goto End;
 	if (!GetTokenInformation(hToken,TokenUser,pTokenUser,Bytes,&Bytes)) goto End;
-	dwSize=sizeof(UserName);
+	dwSize=_countof(UserName);
 	if (!LookupAccountSidW(NULL,pTokenUser->User.Sid,UserName,&dwSize,DomainName,&dwSize,&SidType)) goto End;
 	StringCbPrintfW(Buffer,BufferLengthInBytes,L"%s\\%s",DomainName,UserName);
 	bResult=TRUE;

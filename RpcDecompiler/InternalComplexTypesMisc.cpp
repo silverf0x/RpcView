@@ -546,7 +546,7 @@ BOOL __fastcall processCorrelationDescriptorNaked(
 		ss << "StructMember"<<std::dec<<uCorrDescMember;
 		strCorrelationItem = ss.str();
 	}
-	else if(confDesc.corrDesc.correlation_type & FC_POINTER_CONFORMANCE) // case of FC_TOP_LEVEL_MULTID_CONFORMANCE
+	else if(confDesc.corrDesc.correlation_type & FC_TOP_LEVEL_MULTID_CONFORMANCE) // case of FC_TOP_LEVEL_MULTID_CONFORMANCE
 	{
 		// currently not implemented
 		oss<<"/*FC_TOP_LEVEL_MULTID_CONFORMANCE not implemented */)]";

@@ -328,12 +328,12 @@ End:
 	HICON			hMainIcon;
 	UCHAR			CurrentDirectory[MAX_PATH];
 	UCHAR*			pSeparator;
-	int ret = 0;
+	int             ret = 0;
 #ifdef _DEBUG
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 #else
-	int				argc		= 0;
+	int				argc = 0;
 	
     UNREFERENCED_PARAMETER(hInstance);
     UNREFERENCED_PARAMETER(hPrevInstance);
@@ -343,6 +343,8 @@ End:
 	LPWSTR* argvw = CommandLineToArgvW(pCmdLine, &argc);
 
 	char** argv = (char**)malloc(argc*sizeof(char*));
+    if (argv == NULL) return ret;
+
 	for (int i = 0; i < argc; i++)
 	{
 		size_t tmpSize = lstrlenW(argvw[i]) * 2 + 2;

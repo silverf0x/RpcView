@@ -1043,7 +1043,7 @@ BOOL __fastcall processComplexArray(
 	oss<<" /* ";
 
 	for(j; j<i; j++){
-		if(callbacksCalled[j] != -1)
+		if(callbacksCalled[j] != (UINT16)-1)
 		{
 			oss<<" callback_"<<std::dec<<callbacksCalled[j]<<" used, ";
 		}
@@ -1104,6 +1104,7 @@ UINT __fastcall getArrayMemorySize(
 	case FC_LGVARRAY:
 		RPC_GET_PROCESS_DATA(pType, &longArray, sizeof(LGFixedSizedArrayHeader_t));
 		arraySize = longArray.totalSize;
+        break;
 	default:
 		arraySize = POINTER_SIZE;
 		break;
