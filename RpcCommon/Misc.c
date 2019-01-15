@@ -50,7 +50,7 @@ BOOL WINAPI EnumProcess(EnumProcessCallbackFn_T EnumProcessCallbackFn,void* pCal
 	BOOL				bContinue=TRUE;
 
 	hSnapshot=CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
-	if (hSnapshot==NULL) goto End;
+    if (hSnapshot == INVALID_HANDLE_VALUE) goto End;
 	ProcessEntry.dwSize=sizeof(ProcessEntry);
 	if (!Process32FirstW(hSnapshot,&ProcessEntry)) goto End;
 	do
@@ -61,7 +61,7 @@ BOOL WINAPI EnumProcess(EnumProcessCallbackFn_T EnumProcessCallbackFn,void* pCal
 
 	}while(Process32NextW(hSnapshot,&ProcessEntry));
 End:
-	if (hSnapshot!=NULL) CloseHandle(hSnapshot);
+    if (hSnapshot != INVALID_HANDLE_VALUE) CloseHandle(hSnapshot);
 	return (bResult);
 }
 
