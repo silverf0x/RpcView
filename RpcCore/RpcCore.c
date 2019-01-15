@@ -226,6 +226,7 @@ BOOL WINAPI GetRpcServerAddressInProcess(DWORD Pid,RpcCoreInternalCtxt_T* pRpcCo
 	EnumProcessModulesEx(hProcess, NULL, 0, &cbSize, LIST_MODULES_ALL);
 	if (cbSize == 0) goto End;
 	pHmodule = (HMODULE*)malloc(cbSize);
+    if (pHmodule == NULL) goto End;
 	EnumProcessModulesEx(hProcess, pHmodule, cbSize, &cbSize, LIST_MODULES_ALL);
 
 	for(ULONG i=0;i<cbSize/sizeof(*pHmodule);i++)
