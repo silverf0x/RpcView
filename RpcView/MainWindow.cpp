@@ -271,6 +271,10 @@ void MainWindow_C::SlotDecompileInterface(quint32 Pid, RPC_IF_ID* pIf)
     if (pRpcInterfaceInfo == NULL) goto End;
 	InitDecompilerInfo(pRpcInterfaceInfo, &RpcDecompilerInfo);
 	__try{
+
+		if (!this->pDecompilationWidget->isVisible())
+			this->pDecompilationWidget->show();
+
 		RpcViewHelper_T	LocalRpcViewHelper = {
 			this->pDecompilationWidget,
 			&RpcAlloc,
