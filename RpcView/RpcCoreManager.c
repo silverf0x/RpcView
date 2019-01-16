@@ -92,6 +92,7 @@ VOID* __fastcall RpcCoreInit(BOOL bForce)
     RpcCoreManager_T*   pRpcCoreManager;
 
     pRpcCoreManager = (RpcCoreManager_T*)OS_ALLOC(sizeof(RpcCoreManager_T));
+    if (pRpcCoreManager == NULL) return NULL;
 
     if (!LoadCoreEngine(&pRpcCoreManager->pNativeCore, &pRpcCoreManager->pNativeCoreCtxt, FALSE, bForce))
     {
