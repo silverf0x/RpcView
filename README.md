@@ -34,7 +34,7 @@ Before running CMake you have to set the CMAKE_PREFIX_PATH environment variable 
 ```
 set CMAKE_PREFIX_PATH=C:\Qt\Qt5.9.1\5.9.1\msvc2015_64
 ```
-Before running CMake to produce the project solution you have to create the buikd directories:
+Before running CMake to produce the project solution you have to create the build directories:
 - ```RpcView/Build/x64``` for 64-bit targets
 - ```RpcView/Build/x86``` for 32-bit targets.
 
