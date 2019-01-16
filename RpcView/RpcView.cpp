@@ -189,9 +189,9 @@ void NTAPI InitDecompilerInfo(_In_ RpcInterfaceInfo_T* pRpcInterfaceInfo, _Out_ 
 		{
 			SymboleLength = ((UINT)wcslen(SymboleName) + 1)*sizeof(WCHAR);
 			pRpcDecompilerInfo->ppProcNameTable[i] = (WCHAR*)OS_ALLOC(SymboleLength);
-            if (pRpcDecompilerInfo->ppProcNameTable[i] != NULL) {
-                memcpy(pRpcDecompilerInfo->ppProcNameTable[i], SymboleName, SymboleLength);
-            }
+			if (pRpcDecompilerInfo->ppProcNameTable[i] != NULL) {
+				memcpy(pRpcDecompilerInfo->ppProcNameTable[i], SymboleName, SymboleLength);
+			}
 		}
 	}
 	PdbUninit(hPdb);
