@@ -154,7 +154,7 @@ void NTAPI InitDecompilerInfo(_In_ RpcInterfaceInfo_T* pRpcInterfaceInfo, _Out_ 
 	pRpcDecompilerInfo->ppProcNameTable = (WCHAR**)OS_ALLOC(pRpcDecompilerInfo->NumberOfProcedures*sizeof(UCHAR*));
 	if (pRpcDecompilerInfo->ppProcNameTable == NULL) goto End;
 
-	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pRpcInterfaceInfo->Pid);
+	hProcess = ProcexpOpenProcess(PROCESS_ALL_ACCESS, FALSE, pRpcInterfaceInfo->Pid);
 	if (hProcess == NULL) goto End;
 #ifdef _WIN64
 	pRpcDecompilerInfo->bIs64Bits = !pRpcInterfaceInfo->bWow64Process;

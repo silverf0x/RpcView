@@ -67,7 +67,7 @@ void InterfaceSelectedVisitor_C::Visit(InterfaceInfoWidget_C* pInterfaceInfoWidg
 	SymbolName[0]=0;
 	if (pRpcInterfaceInfo->pLocationBase!=NULL) 
 	{
-		hProcess=OpenProcess(PROCESS_ALL_ACCESS,FALSE,Pid);
+		hProcess=ProcexpOpenProcess(PROCESS_ALL_ACCESS,FALSE,Pid);
 		if (hProcess==NULL) goto End;
 		
 		hPdb = PdbInit(hProcess, pRpcInterfaceInfo->pLocationBase, pRpcInterfaceInfo->LocationSize);
@@ -140,7 +140,7 @@ void InterfaceSelectedVisitor_C::Visit(ProceduresWidget_C* pProceduresWidget)
 		case IfType_RPC:
 			if (pRpcInterfaceInfo->pLocationBase==NULL) goto End;
 			
-			hProcess=OpenProcess(PROCESS_ALL_ACCESS,FALSE,Pid);
+			hProcess=ProcexpOpenProcess(PROCESS_ALL_ACCESS,FALSE,Pid);
 			if (hProcess==NULL) goto End;
 			
 			hPdb = PdbInit(hProcess, pRpcInterfaceInfo->pLocationBase, pRpcInterfaceInfo->LocationSize);

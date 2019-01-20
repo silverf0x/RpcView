@@ -193,7 +193,7 @@ BOOL __fastcall	RpcGetProcessData(RpcModuleInfo_T* pRpcModuleInfo, RVA_T Rva, VO
 	if (pRpcModuleInfo == NULL) goto End;
 	pAddress = (VOID*)(pRpcModuleInfo->pModuleBase + Rva);
 
-	hProcess = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, pRpcModuleInfo->Pid);
+	hProcess = ProcexpOpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, pRpcModuleInfo->Pid);
 	if (hProcess == NULL) goto End;
 	bResult = ReadProcessMemory(hProcess, pAddress, pBuffer, BufferLength, NULL);
 End:

@@ -31,7 +31,7 @@ typedef struct _LocationInfo_T{
 	SIZE_T	Size;
 }LocationInfo_T;
 
-
+HANDLE  WINAPI ProcexpOpenProcess(DWORD dwDesiredAccess,BOOL bInheritHandle,DWORD dwProcessId);
 BOOL	WINAPI AdjustPrivilege(LPCTSTR lpPrivilegeName,BOOL bEnablePrivilege);
 BOOL	WINAPI GetModuleDescription(WCHAR* pModulePath,WCHAR* pDescription,UINT Bytes);
 UINT64	WINAPI GetModuleVersion(WCHAR* pModulePath);

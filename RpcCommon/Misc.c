@@ -18,6 +18,47 @@ typedef struct _LanguageCodePage_T {
 	WORD wCodePage;
 } LanguageCodePage_T;
 
+#define IOCTL_OPEN_PROCESS 0x8335003C
+
+HANDLE hProcexp = NULL;
+
+HANDLE ProcexpOpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId)
+{
+    HANDLE  hProcess = NULL;
+    UINT64  Pid = dwProcessId;
+    DWORD   Bytes;
+
+    hProcess = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessId);
+    if (hProcess != NULL) goto End;
+    if (hProcexp == NULL)
+    {
+        hProcexp = CreateFileA(
+            "\\\\.\\PROCEXP152",
+            GENERIC_READ,
+            0,
+            NULL,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL
+        );
+        if (hProcexp == INVALID_HANDLE_VALUE)
+        {
+            goto End;
+        }
+    }
+    DeviceIoControl(
+        hProcexp,
+        IOCTL_OPEN_PROCESS,
+        &Pid,
+        sizeof(Pid),
+        &hProcess,
+        sizeof(hProcess),
+        &Bytes,
+        NULL
+    );
+End:
+    return hProcess;
+}
 
 //------------------------------------------------------------------------------
 BOOL WINAPI AdjustPrivilege(LPCTSTR lpPrivilegeName,BOOL bEnablePrivilege)
@@ -259,7 +300,7 @@ BOOL WINAPI GetProcessPath(DWORD Pid, WCHAR* pProcessPath, DWORD ProcessPathLeng
 	BOOL	bResult = FALSE;
 	DWORD	Size;
 
-	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, Pid);
+	hProcess = ProcexpOpenProcess(PROCESS_ALL_ACCESS, FALSE, Pid);
 	if (hProcess == NULL) goto End;
 	Size = ProcessPathLength;
 	bResult = QueryFullProcessImageNameW(hProcess, 0, pProcessPath, &Size);
@@ -299,7 +340,7 @@ BOOL WINAPI GetUserAndDomainName(DWORD Pid, WCHAR* Buffer, ULONG BufferLengthInB
 	SID_NAME_USE	SidType;
 	BOOL			bResult = FALSE;
 
-	hProcess = OpenProcess(PROCESS_VM_OPERATION|PROCESS_QUERY_INFORMATION,FALSE,Pid);
+	hProcess = ProcexpOpenProcess(PROCESS_VM_OPERATION|PROCESS_QUERY_INFORMATION,FALSE,Pid);
 	if (hProcess==NULL) goto End;
 
 	if (!OpenProcessToken(hProcess,TOKEN_QUERY,&hToken)) goto End;
@@ -325,7 +366,7 @@ BOOL WINAPI IsProcessWow64(ULONG Pid)
 	BOOL	bWow64		= FALSE;
 	HANDLE	hProcess	= NULL;
 
-	hProcess = OpenProcess(PROCESS_VM_OPERATION|PROCESS_QUERY_INFORMATION,FALSE,Pid);
+	hProcess = ProcexpOpenProcess(PROCESS_VM_OPERATION|PROCESS_QUERY_INFORMATION,FALSE,Pid);
 	if (hProcess==NULL) goto End;
 	IsWow64Process(hProcess,&bWow64);
 End:
