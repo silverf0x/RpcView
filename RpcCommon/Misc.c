@@ -22,10 +22,10 @@ typedef struct _LanguageCodePage_T {
 
 HANDLE hProcexp = NULL;
 
-HANDLE ProcexpOpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId)
+HANDLE WINAPI ProcexpOpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId)
 {
     HANDLE  hProcess = NULL;
-    UINT64  Pid = dwProcessId;
+    HANDLE  Pid = (HANDLE)(uintptr_t)dwProcessId;
     DWORD   Bytes;
 
     hProcess = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessId);
