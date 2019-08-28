@@ -48,11 +48,13 @@ void InterfacesWidget_C::InterfaceSelected(const QModelIndex& Index)
 {
 	QStringList			PidStringList;
 	QStringList			VersionStringList;
+    QByteArray 			UuidStringARef;
 	RPC_IF_ID			RpcIfId;
 	UCHAR*				pUuidStringA;
 	
 	QString	PidString			= pProxyModel->data( pProxyModel->index(Index.row(), Column_Pid) ).toString();
-			pUuidStringA		= (UCHAR*)pProxyModel->data( pProxyModel->index(Index.row(), Column_Uuid) ).toString().toLatin1().data();
+            UuidStringARef      = pProxyModel->data(pProxyModel->index(Index.row(), Column_Uuid)).toString().toLatin1();
+			pUuidStringA		= (UCHAR*)UuidStringARef.data();
 	QString	VersionString		= pProxyModel->data( pProxyModel->index(Index.row(), Column_Version) ).toString();
 			VersionStringList	= VersionString.split(".", QString::SkipEmptyParts, Qt::CaseSensitive);
 	
