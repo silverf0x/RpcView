@@ -207,7 +207,7 @@ ProceduresWidget_C::ProceduresWidget_C(QWidget* pParent):QDockWidget(WidgetName)
 	
 	pProcedures->setColumnCount(ProceduresWigetColumn_Last);
 	pProcedures->setSortingEnabled(true);
-	pProcedures->sortByColumn(-1);
+	pProcedures->sortByColumn(-1, Qt::AscendingOrder);
 	pProcedures->setAnimated(true);
 	pProcedures->expandAll();
 	pProcedures->setAlternatingRowColors(true);

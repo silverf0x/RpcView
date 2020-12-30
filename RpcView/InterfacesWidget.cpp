@@ -56,7 +56,7 @@ void InterfacesWidget_C::InterfaceSelected(const QModelIndex& Index)
             UuidStringARef      = pProxyModel->data(pProxyModel->index(Index.row(), Column_Uuid)).toString().toLatin1();
 			pUuidStringA		= (UCHAR*)UuidStringARef.data();
 	QString	VersionString		= pProxyModel->data( pProxyModel->index(Index.row(), Column_Version) ).toString();
-			VersionStringList	= VersionString.split(".", QString::SkipEmptyParts, Qt::CaseSensitive);
+			VersionStringList	= VersionString.split(".", Qt::SkipEmptyParts, Qt::CaseSensitive);
 	
 	if (VersionStringList.isEmpty())
 	{
