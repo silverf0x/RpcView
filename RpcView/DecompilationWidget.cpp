@@ -31,7 +31,7 @@ DecompilationWidget_C::DecompilationWidget_C(QWidget *parent) : QDockWidget(Widg
 	pTextEdit = new QTextEdit(this);
 	pTextEdit->setLineWrapMode(QTextEdit::NoWrap);
 	pTextEdit->setFont(font);
-	pTextEdit->setTabStopWidth(font.pointSize()*TAB_AS_CHARS);
+	pTextEdit->setTabStopDistance(font.pointSize()*TAB_AS_CHARS);
 
 	pIdlHighlighter = new IdlHighlighter_C(pTextEdit->document());
 	setWidget(pTextEdit);

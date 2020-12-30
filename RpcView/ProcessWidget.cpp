@@ -341,8 +341,8 @@ void ProcessWidget_C::LoadConfiguration(QSettings* pSettings)
 	//
 	// Force Tree sorting by PID
 	//
-	pProcessTree->sortByColumn(Column_Pid);
-	pProcessTree->sortByColumn(-1);
+	pProcessTree->sortByColumn(Column_Pid, Qt::AscendingOrder);
+	pProcessTree->sortByColumn(-1, Qt::AscendingOrder);
 }
 
 //------------------------------------------------------------------------------
@@ -358,8 +358,8 @@ void ProcessWidget_C::InitProcessTreeWidget(QWidget* pParent)
 		pHeaderItem->setText( Idx, GetColumName((Column_T)Idx) );
 	}
 	pProcessTree->setColumnCount(Column_Last);
-	pProcessTree->sortByColumn(Column_Pid);
-	pProcessTree->sortByColumn(-1);
+	pProcessTree->sortByColumn(Column_Pid, Qt::AscendingOrder);
+	pProcessTree->sortByColumn(-1, Qt::AscendingOrder);
 	pProcessTree->setAnimated(true);
 	pProcessTree->setSortingEnabled(true);
 
@@ -524,8 +524,8 @@ void ProcessWidget_C::ViewHeaderClicked(int logicalIndex)
 
 		pStackedWidget->setCurrentWidget(pProcessTree);
 		pProcessTree->header()->restoreState(pProcessView->header()->saveState());
-		pProcessTree->sortByColumn(Column_Pid);
-		pProcessTree->sortByColumn(-1);
+		pProcessTree->sortByColumn(Column_Pid,Qt::AscendingOrder);
+		pProcessTree->sortByColumn(-1, Qt::AscendingOrder);
 		pProcessTree->scrollToItem(pProcessTree->currentItem());
 	}
 }
