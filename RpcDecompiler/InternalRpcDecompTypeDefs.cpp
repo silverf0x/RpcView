@@ -92,9 +92,9 @@ bool TypeToDefine::operator<( const TypeToDefine& right)
 {
 	return (this->m_rva < right.m_rva);
 }
-bool TypeToDefine::operator== ( const TypeToDefine& right)
+bool operator== ( const TypeToDefine& self, const TypeToDefine& right)
 {
-	return (this->m_rva == right.m_rva);
+	return (self.m_rva == right.m_rva);
 }
 
 
@@ -216,7 +216,3 @@ void	ParamDesc::fillWithParamAttr(_In_ PARAM_ATTRIBUTES paramAttr)
 	if(paramAttr.IsSimpleRef) m_uPtrLevel++;
 	//....
 }
-
-
-
-

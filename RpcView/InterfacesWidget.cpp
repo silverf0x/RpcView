@@ -109,7 +109,7 @@ void InterfacesWidget_C::ApplyProcessFilter(quint32 Pid)
 //------------------------------------------------------------------------------
 void InterfacesWidget_C::SnapInterfaces()
 {
-	PrivateItemList = pModel->findItems(".*", Qt::MatchRegExp, Column_Uuid);
+	PrivateItemList = pModel->findItems(".*", Qt::MatchRegularExpression, Column_Uuid);
 }
 
 

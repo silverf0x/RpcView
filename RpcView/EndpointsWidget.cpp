@@ -65,7 +65,7 @@ ULONG EndpointsWidget_C::GetTotalEndpoints()
 //------------------------------------------------------------------------------
 void EndpointsWidget_C::SnapEndpoint()
 {
-	PrivateItemList = pModel->findItems(".*", Qt::MatchRegExp, Column_Name);
+	PrivateItemList = pModel->findItems(".*", Qt::MatchRegularExpression, Column_Name);
 }
 
 

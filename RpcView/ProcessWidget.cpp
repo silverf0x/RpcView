@@ -77,8 +77,8 @@ void ProcessWidget_C::SelectProcess(quint32 Pid)
 //------------------------------------------------------------------------------
 void ProcessWidget_C::SnapProcesses()
 {
-	PrivateTreeItemList = pProcessTree->findItems(".*", Qt::MatchRegExp|Qt::MatchRecursive, Column_Pid);
-	PrivateViewItemList = pModel->findItems(".*", Qt::MatchRegExp, Column_Pid);
+	PrivateTreeItemList = pProcessTree->findItems(".*", Qt::MatchRegularExpression |Qt::MatchRecursive, Column_Pid);
+	PrivateViewItemList = pModel->findItems(".*", Qt::MatchRegularExpression, Column_Pid);
 }
 
 

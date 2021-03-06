@@ -1985,7 +1985,7 @@ public:
 
 	// operator
 	bool operator<( const TypeToDefine& right);
-	bool operator== ( const TypeToDefine& right);
+	friend bool operator==( const TypeToDefine& self, const TypeToDefine& right);
 };
 
 
