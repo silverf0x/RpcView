@@ -1,0 +1,59 @@
+version: 0.3.0.{build}
+image: Visual Studio 2019
+build_script:
+- cmd: >-
+    cd C:\projects\RpcView
+
+    mkdir Build\x64
+
+    cd C:\projects\RpcView\Build\x64
+
+    set CMAKE_PREFIX_PATH=C:\Qt\5.15.2\msvc2019_64
+
+    cmake ..\.. -A x64 -T"v140_xp"
+
+    cmake --build . --config release
+
+    cd C:\projects\RpcView\Build\x64\bin\Release
+
+    mkdir RpcView64
+
+    copy *.dll RpcView64\
+
+    copy *.exe RpcView64\
+
+    C:\Qt\5.15.2\msvc2019_64\bin\windeployqt.exe --release RpcView64\
+
+
+    7z a RpcView64.7z RpcView64
+
+
+    cd C:\projects\RpcView
+
+    mkdir Build\x86
+
+    cd C:\projects\RpcView\Build\x86
+
+    set CMAKE_PREFIX_PATH=C:\Qt\5.15.2\msvc2019
+
+    cmake ..\.. -A win32 -T"v140_xp"
+
+    cmake --build . --config release
+
+    cd C:\projects\RpcView\Build\x86\bin\Release
+
+    mkdir RpcView32
+
+    copy *.exe RpcView32\
+
+    copy *.dll RpcView32\
+
+    C:\Qt\5.15.2\msvc2019_64\bin\windeployqt.exe  --release RpcView32\
+
+
+    7z a RpcView32.7z RpcView32
+artifacts:
+- path: Build\x64\bin\Release\RpcView64.7z
+  name: RpcView64
+- path: Build\x86\bin\Release\RpcView32.7z
+  name: RpcView32
