@@ -48,7 +48,7 @@ build_script:
 
     copy *.dll RpcView32\
 
-    C:\Qt\5.15.2\msvc2019_64\bin\windeployqt.exe  --release RpcView32\
+    C:\Qt\5.15.2\msvc2019_32\bin\windeployqt.exe  --release RpcView32\
 
 
     7z a RpcView32.7z RpcView32
