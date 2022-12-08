@@ -1,0 +1,68 @@
+name: CMake
+
+on: [push, pull_request,workflow_dispatch]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  CMAKE_PREFIX_PATH: ${{github.workspace}}\..\Qt\5.15.2\msvc2019_64
+  ProjectDir: ${{github.workspace}}\build\bin\Release\
+  PackDirName: RpcView64
+  PackDirPath: ${{github.workspace}}\build\bin\Release\RpcView64
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Qt
+      # Installs the Qt SDK
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '5.15.2'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        archives: 'qtbase qtwinextras qttools'
+        
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -A x64 -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+ 
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}}
+
+    - name: Package
+      id: Package
+      shell: cmd
+      #call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      run: |
+          cd ${{env.ProjectDir}}
+          mkdir ${{env.PackDirName}}
+          copy *.dll ${{env.PackDirName}}\
+          copy *.exe ${{env.PackDirName}}\
+          ${{env.CMAKE_PREFIX_PATH}}\bin\windeployqt.exe --no-angle --no-opengl-sw --no-system-d3d-compiler --no-translations --release ${{env.PackDirName}}\
+          
+    - name: Prune
+      id: Prune
+      shell: cmd
+      run: |
+          rmdir /s /q ${{env.PackDirPath}}\imageformats
+          rmdir /s /q ${{env.PackDirPath}}\styles
+          
+    - name: Upload Binaries
+      uses: actions/upload-artifact@v3
+      with:
+        name: RpcView64-windows
+        path: ${{env.PackDirPath}}\
