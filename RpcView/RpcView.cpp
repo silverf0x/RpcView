@@ -368,6 +368,10 @@ End:
 		_cprintf("%s\n",CurrentDirectory);
 		SetCurrentDirectoryA((LPCSTR)CurrentDirectory);
 	}
+	//
+	// Load unsupported runtim versions by default
+	//
+	gRpcCoreManager.bForceLoading = TRUE;
 #ifdef _DEBUG
 	if (argc>1)
 	{
@@ -378,31 +382,11 @@ End:
 				DecompileAllInterfaces(&gRpcCoreManager);
 				_CrtDumpMemoryLeaks();
 			}
-			else if (!_stricmp(argv[1], "/f"))
-			{
-				gRpcCoreManager.bForceLoading = TRUE;
-			}
 			else
 			{
-				_cprintf("Usage %s: [/f] [/DA]\n", argv[0]);
-				_cprintf("  /f : force loading for unsupported runtime versions \n");
+				_cprintf("Usage %s: [/DA]\n", argv[0]);
 				_cprintf("  /DA : decompile all interfaces\n");
 			}
-		}
-		//
-		//return 0;
-	}
-#else
-	if (argc>1)
-	{
-		if (argvw[1] && !wcsncmp(argvw[1], L"/f", 2))
-		{
-			gRpcCoreManager.bForceLoading = TRUE;
-		}
-		else
-		{
-			_cprintf("Usage %s: [/f]\n", argv[0]);
-			_cprintf("  /f : force loading for unsupported runtime versions \n");
 		}
 	}
 #endif
