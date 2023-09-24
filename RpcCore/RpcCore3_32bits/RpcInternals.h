@@ -63,7 +63,7 @@ typedef struct _RPC_INTERFACE_T
 	MUTEX_T						Mutex;
 	ULONG						EpMapperFlags;
 	RPC_MGR_EPV PTR_T			pMgrEpv;
-	RPC_IF_CALLBACK_FN PTR_T	IfSecurityCallback;
+	RPC_IF_CALLBACK_FN PTR_T	IfCallbackFn;
 	RPC_SERVER_INTERFACE_T		RpcServerInterface;
 	MIDL_SYNTAX_INFO PTR_T		pSyntaxInfo;
 	VOID PTR_T					pTransfertSyntaxes;
@@ -74,7 +74,7 @@ typedef struct _RPC_INTERFACE_T
 	UUID_VECTOR PTR_T			pUuidVector;
 	SIMPLE_DICT_T				RpcInterfaceManagerDict;
 	UCHAR						Annotation[64];
-	RPC_IF_CALLBACK_FN PTR_T	IfCallbackFn;
+	RPC_IF_CALLBACK_FN PTR_T	IfSecurityCallback;
 	ULONG						IsCallSizeLimitReached;
 	ULONG						currentNullManagerCalls;
 	ULONG						currentAutoListenCalls;

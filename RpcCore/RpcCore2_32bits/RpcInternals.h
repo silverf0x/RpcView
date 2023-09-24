@@ -81,7 +81,7 @@ typedef struct _RPC_INTERFACE_T
 	ULONG						Flags;
 	ULONG						EpMapperFlags;
 	RPC_MGR_EPV PTR_T			pMgrEpv;
-	RPC_IF_CALLBACK_FN PTR_T	IfSecurityCallbackFn;
+	RPC_IF_CALLBACK_FN PTR_T	IfCallbackFn;
 	RPC_SERVER_INTERFACE_T		RpcServerInterface;
 	ULONG 						unk2[2];
 	BOOL 						bInterfaceSupportMultipleTransferSyntaxes;
@@ -91,7 +91,7 @@ typedef struct _RPC_INTERFACE_T
 	UUID_VECTOR PTR_T 			pUuidVector;
 	SIMPLE_DICT_T 				RpcInterfaceManagerDict;
 	UCHAR		 				Annotation[MAX_RPC_INTERFACE_ANNOTATION];
-	RPC_IF_CALLBACK_FN PTR_T 	IfCallbackFn;
+	RPC_IF_CALLBACK_FN PTR_T 	IfSecurityCallbackFn;
 	ULONG 						CurrentNullManagerCalls;
 	ULONG 						CurrentAutoListenCalls;
 	ULONG 						__Field_DC;
