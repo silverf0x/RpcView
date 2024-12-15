@@ -51,7 +51,8 @@ BOOL __fastcall isSimpleType(
 		type == FC_ERROR_STATUS_T	||
 		type == FC_INT3264		||
 		type == FC_UINT3264		||
-		type == FC_IGNORE
+		type == FC_IGNORE		||
+		type == FC_SYSTEM_HANDLE
 		)
 	{
 		bResult				= TRUE;

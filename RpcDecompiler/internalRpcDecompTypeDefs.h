@@ -60,8 +60,8 @@ typedef struct _RpcDecompilerCtxt_T{
 #define ERROR_ZERO_TYPEOFFSET_MSG "\nERROR: TypeOffset == 0 whereas Type is not simple Type\n"
 
 
-#define NB_DIGIT_MAX_INT_32BITS_BASE_10		11	//2^32 = 4294967296 ==> 10 caractères ou word
-//2^31 = 2147483648 + signe ==> 11 caractères ou word
+#define NB_DIGIT_MAX_INT_32BITS_BASE_10		11	//2^32 = 4294967296 ==> 10 caractÃ¨res ou word
+//2^31 = 2147483648 + signe ==> 11 caractÃ¨res ou word
 #define BASE_10								10
 
 #define EMPTY_PARAM_ATTR					0x0000
@@ -241,7 +241,7 @@ typedef struct Oif_Header_t
 														been precomputed by the compiler. This may be only a partial size,
 														as the SERVER_MUST_SIZE flag triggers the sizing. */
 	INTERPRETER_OPT_FLAGS	interpreter_opt_flag;		// Voir interpreter_opt_flag values
-	unsigned char			number_of_param;			// Nombre de paramètres décrits de la procédure, return compris
+	unsigned char			number_of_param;			// Nombre de paramÃ¨tres dÃ©crits de la procÃ©dure, return compris
 }Oif_Header_t, OIF_HEADER_T;
 
 //------------------------------------------------------------------------------
@@ -296,8 +296,8 @@ typedef struct Win2kExt_Header_t
 													a default size should be used. */ 
 	unsigned short			serverCorrHint;
 	unsigned short			notifyIndex;			// TODO ? : The NotifyIndex element is an index to a notify routine, if one is used.
-	FloatDoubleMask_t 		floatDoubleMask;		/* Si extension_version == WIN2K_EXT_HEADER_32B_SIZE floatDoubleMask est non présent,
-													sinon si extension_version == WIN2K_EXT_HEADER_64B_SIZE floatDoubleMask est présent */
+	FloatDoubleMask_t 		floatDoubleMask;		/* Si extension_version == WIN2K_EXT_HEADER_32B_SIZE floatDoubleMask est non prÃ©sent,
+													sinon si extension_version == WIN2K_EXT_HEADER_64B_SIZE floatDoubleMask est prÃ©sent */
 }Win2kExt_Header_t;
 
 
@@ -423,7 +423,7 @@ typedef struct PARAM_ATTRIBUTES
 	unsigned short  IsIn                : 1;    // 0x0008
 	unsigned short  IsOut               : 1;    // 0x0010
 	unsigned short  IsReturn            : 1;    // 0x0020
-	unsigned short  IsBasetype          : 1;    /* 0x0040 set for simple types that are being marshaled by the main –Oif 
+	unsigned short  IsBasetype          : 1;    /* 0x0040 set for simple types that are being marshaled by the main Â–Oif 
 												interpreter loop. In particular, a simple type with a range 
 												attribute on it is not flagged as a base type in order to force 
 												the range routine marshaling through dispatching using an FC_RANGE 
@@ -433,7 +433,7 @@ typedef struct PARAM_ATTRIBUTES
 												types, regardless of whether the argument is a pointer. The compound 
 												types for which it is set are structures, unions, transmit_as, 
 												represent_as, wire_marshal and SAFEARRAY. In general, the bit was 
-												introduced for the benefit of the main interpreter loop in the –Oicf 
+												introduced for the benefit of the main interpreter loop in the Â–Oicf
 												interpreter, to ensure the nonsimple arguments (refe		rred to as compound 
 												type arguments) are properly dereferenced. This bit was never used in 
 												previous versions of the interpreter.
@@ -596,7 +596,7 @@ enum FC_TYPE
 	FC_ALIGNM8 = 0x39,
 	FC_UNUSED2 = 0x3A,
 	FC_UNUSED3 = 0x3B,
-	FC_UNUSED4 = 0x3C,
+	FC_SYSTEM_HANDLE = 0x3C,
 	FC_STRUCTPAD1 = 0x3D,
 	FC_STRUCTPAD2 = 0x3E,
 	FC_STRUCTPAD3 = 0x3F,
@@ -688,7 +688,7 @@ the conformance size. No further computation is required. */
 #define FC_TOP_LEVEL_MULTID_CONFORMANCE	0x80	/* For top-level conformance of a multidimensional array described
 by another parameter.
 Note  Multidimensional sized arrays and pointers trigger a 
-switch to –Oicf. */
+switch to Â–Oicf. */
 #define CORR_TYPE_4_LOWER_NIBBLE_MASK	0x0F
 #define CORR_TYPE_4_UPPER_NIBBLE_MASK	0xF0
 
@@ -733,7 +733,7 @@ typedef struct CorrelationDescriptorNonRobust_t
 
 	unsigned char	correlation_operator; // voir correlation_operator values
 	INT16			offset;
-	/* The offset<2> field is typically a relative memory offset to the expression argument variable. It can also be an expression evaluation–routine
+	/* The offset<2> field is typically a relative memory offset to the expression argument variable. It can also be an expression evaluationÂ–routine
 	index. As mentioned previously in this document, for constant expressions it is a part of actual, final expression value.
 
 	The interpretation of the offset<2> field as memory offset depends on the complexity of the expression, the location of the expression variable, 
@@ -745,7 +745,7 @@ typedef struct CorrelationDescriptorNonRobust_t
 	conformant array is at the end of the structure.
 
 	For top-level conformance, the offset field contains the offset from the stub's first parameter's location on the stack to the parameter that describes
-	the conformance. This is not used in –Os mode. There are other exceptions to the interpretation of the offset field; such exceptions are described in 
+	the conformance. This is not used in Â–Os mode. There are other exceptions to the interpretation of the offset field; such exceptions are described in 
 	the description of those types.
 
 	When offset<2> is used with FC_CALLBACK, it contains an index in the expression evaluation routine table generated by the compiler. The stub message 
@@ -764,7 +764,7 @@ typedef struct CorrelationDescriptorRobust_t
 
 	unsigned char			correlation_operator; // voir correlation_operator values
 	INT16					offset;
-	/* The offset<2> field is typically a relative memory offset to the expression argument variable. It can also be an expression evaluation–routine
+	/* The offset<2> field is typically a relative memory offset to the expression argument variable. It can also be an expression evaluationÂ–routine
 	index. As mentioned previously in this document, for constant expressions it is a part of actual, final expression value.
 
 	The interpretation of the offset<2> field as memory offset depends on the complexity of the expression, the location of the expression variable, 
@@ -776,7 +776,7 @@ typedef struct CorrelationDescriptorRobust_t
 	conformant array is at the end of the structure.
 
 	For top-level conformance, the offset field contains the offset from the stub's first parameter's location on the stack to the parameter that describes
-	the conformance. This is not used in –Os mode. There are other exceptions to the interpretation of the offset field; such exceptions are described in 
+	the conformance. This is not used in Â–Os mode. There are other exceptions to the interpretation of the offset field; such exceptions are described in 
 	the description of those types.
 
 	When offset<2> is used with FC_CALLBACK, it contains an index in the expression evaluation routine table generated by the compiler. The stub message 
@@ -932,10 +932,10 @@ typedef struct PointerInstance_t
 													(the end of the nonconformant portion of conformant structures): for arrays, the 
 													offset is from the beginning of the array.
 													*/
-	PointerDescription_U	pointerDescription;		/* d'après la doc MSDN partie Pointer Layout, 
-													pointerDescription est de taille 4 ce qui correspond à la taille des types
+	PointerDescription_U	pointerDescription;		/* d'aprÃ¨s la doc MSDN partie Pointer Layout, 
+													pointerDescription est de taille 4 ce qui correspond Ã  la taille des types
 													commonPtrSimple et commonPtrComplex. 
-													TODO : valider cette hypothèse au cours des tests
+													TODO : valider cette hypothÃ¨se au cours des tests
 													*/
 }PointerInstance_t;
 
@@ -1329,7 +1329,7 @@ typedef struct HardStructHeader_t
 	UINT32			reserved;
 	INT16			enumOffset;					/* The enum_offset<2> field provides the offset from the beginning of the
 												structure in memory to an enum16 if it contains one; otherwise the 
-												enum_offset<2> field is –1. */
+												enum_offset<2> field is Â–1. */
 	UINT16			copySize;					/* The copy_size<2> field provides the total number of bytes in the structure,
 												which may be block-copied into/from the buffer. This total does not include
 												any trailing union nor any end-padding in memory. This value is also the amount
@@ -1668,7 +1668,7 @@ TypeFormat_t * firstType;
 //#define FC_TRANSMIT_AS	0x2d
 //#define FC_REPRESENT_AS	0x2e
 
-// TODO : voir utilité
+// TODO : voir utilitÃ©
 //#define FC_POINTER		0x36
 //
 //

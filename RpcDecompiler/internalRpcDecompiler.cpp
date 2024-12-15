@@ -667,6 +667,7 @@ DWORD __fastcall getSimpleTypeMemorySize(_In_ FC_TYPE fcType)
 	case FC_DOUBLE:
 	case FC_INT3264:
 	case FC_UINT3264:
+	case FC_SYSTEM_HANDLE:
 		return 8;
 
 	case FC_ZERO:
@@ -787,6 +788,9 @@ BOOL __fastcall printSimpleType(
 		oss << "unsigned __int3264 ";
 		break;
 
+	case FC_SYSTEM_HANDLE:
+		oss << "/* FC_SYSTEM_HANDLE */ hyper ";
+		break;
 
 	default :
 		oss << "[ERROR] parseBaseType : unknown type ("<<fcType<<")";
@@ -845,6 +849,7 @@ BOOL __fastcall rpcDumpType(
 		case FC_IGNORE:
 		case FC_INT3264:
 		case FC_UINT3264:
+		case FC_SYSTEM_HANDLE:
 			//processSimpleType(pContext, 
 			bResult = processSimpleType(pContext, (FC_TYPE)bFC_TYPE, paramDesc,  oss);
 			if (bResult==FALSE) RPC_ERROR_FN("processSimpleType failed\n");
@@ -1018,8 +1023,11 @@ BOOL __fastcall rpcDumpType(
 			bResult = TRUE;
 			break;
 		default:
-		RPC_ERROR_FN("Invalid type\n");
-		oss << "[ERROR] dump type : unknown type (0x" << std::hex << (int)bFC_TYPE << ")" << std::endl;
+			RPC_ERROR_FN("Invalid type\n");
+			oss << "[ERROR] dump type : unknown_type (0x" << std::hex << (int)bFC_TYPE << ") ";
+			oss<<paramDesc.getStrTypeName();
+			bResult = TRUE;
+			return bResult;
 			
 		return FALSE;
 	}
@@ -1076,6 +1084,7 @@ BOOL __fastcall getTypeMemorySize(
 		case FC_IGNORE:
 		case FC_INT3264:
 		case FC_UINT3264:
+		case FC_SYSTEM_HANDLE:
 			//processSimpleType(pContext, 
 			(*pszMemorySize) = getSimpleTypeMemorySize((FC_TYPE)bFC_TYPE);
 			bResult = TRUE;
